@@ -20,7 +20,7 @@ __global__ void gaussianBlur(const unsigned char* inputChannel, unsigned char* c
     const int2 thread2DPos = make_int2(blockIdx.x*blockDim.x+threadIdx.x,blockIdx.y*blockDim.y+threadIdx.y);
     const int thread1DPos = thread2DPos.y * numCols + thread2DPos.x;
     
-    if(thread2DPos.y >= numCols ||thread2DPos.x >= numRows) return;
+    if(thread2DPos.x >= numCols ||thread2DPos.y >= numRows) return;
     
     float result = 0.f;
     for(int filterRow = -filterWidth/2; filterRow <= filterWidth/2; ++filterRow){
@@ -42,7 +42,7 @@ __global__ void separateChannels(const Image::Rgb* inputImageDevice, int numRows
     const int2 thread2DPos = make_int2(blockIdx.x*blockDim.x+threadIdx.x,blockIdx.y*blockDim.y+threadIdx.y);
     const int thread1DPos = thread2DPos.y * numCols + thread2DPos.x;
                                                               
-    if(thread2DPos.y >= numCols ||thread2DPos.x >= numRows) return;
+    if(thread2DPos.x >= numCols ||thread2DPos.y >= numRows) return;
     redChannel[thread1DPos] = inputImageDevice[thread1DPos].r;
     greenChannel[thread1DPos] = inputImageDevice[thread1DPos].g;
     blueChannel[thread1DPos] = inputImageDevice[thread1DPos].b;
@@ -52,7 +52,7 @@ __global__ void combineChannels(const unsigned char* const redChannel,const unsi
     const int2 thread2DPos = make_int2(blockIdx.x*blockDim.x+threadIdx.x,blockIdx.y*blockDim.y+threadIdx.y);
     const int thread1DPos = thread2DPos.y * numCols + thread2DPos.x;
                                                               
-    if(thread2DPos.y >= numCols ||thread2DPos.x >= numRows) return;
+    if(thread2DPos.x >= numCols ||thread2DPos.y >= numRows) return;
                                                               
     unsigned char red = redChannel[thread1DPos];
     unsigned char green = greenChannel[thread1DPos];
@@ -92,20 +92,19 @@ void gaussianBlur(Image::Rgb* const inputImageDevice,
                                              );
     cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
     
-    gaussianBlur<<<gridSize, blockSize>>>(red, redBlurredDevice, numRows, numCols, filterDevice, filterWidth);
-    gaussianBlur<<<gridSize, blockSize>>>(green, greenBlurredDevice, numRows, numCols, filterDevice, filterWidth);
-    gaussianBlur<<<gridSize, blockSize>>>(blue, blueBlurredDevice, numRows, numCols, filterDevice, filterWidth);
+    // gaussianBlur<<<gridSize, blockSize>>>(red, redBlurredDevice, numRows, numCols, filterDevice, filterWidth);
+    // gaussianBlur<<<gridSize, blockSize>>>(green, greenBlurredDevice, numRows, numCols, filterDevice, filterWidth);
+    // gaussianBlur<<<gridSize, blockSize>>>(blue, blueBlurredDevice, numRows, numCols, filterDevice, filterWidth);
 
     cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
 
-    combineChannels<<<gridSize, blockSize>>>(redBlurredDevice,
-                                            greenBlurredDevice,
-                                            blueBlurredDevice,
-                                            outputImageDevice,
-                                            numRows,
-                                            numCols);
+    // combineChannels<<<gridSize, blockSize>>>(redBlurredDevice,
+    //                                         greenBlurredDevice,
+    //                                         blueBlurredDevice,
+    //                                         outputImageDevice,
+    //                                         numRows,
+    //                                         numCols);
     cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
-   
 }
 
 
