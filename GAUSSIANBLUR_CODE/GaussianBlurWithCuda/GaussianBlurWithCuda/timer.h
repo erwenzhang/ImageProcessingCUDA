@@ -1,13 +1,42 @@
-//
-//  timer.h
-//  GaussianBlurWithCuda
-//
-//  Created by Wenwen on 11/11/16.
-//  Copyright © 2016 wenwen. All rights reserved.
-//
+#ifndef GPU_TIMER_H__
+#define GPU_TIMER_H__
 
-#ifndef timer_h
-#define timer_h
+#include <cuda_runtime.h>
 
+struct GpuTimer
+{
+    cudaEvent_t start;
+    cudaEvent_t stop;
+    
+    GpuTimer()
+    {
+        cudaEventCreate(&start);
+        cudaEventCreate(&stop);
+    }
+    
+    ~GpuTimer()
+    {
+        cudaEventDestroy(start);
+        cudaEventDestroy(stop);
+    }
+    
+    void Start()
+    {
+        cudaEventRecord(start, 0);
+    }
+    
+    void Stop()
+    {
+        cudaEventRecord(stop, 0);
+    }
+    
+    float Elapsed()
+    {
+        float elapsed;
+        cudaEventSynchronize(stop);
+        cudaEventElapsedTime(&elapsed, start, stop);
+        return elapsed;
+    }
+};
 
-#endif /* timer_h */
+#endif  /* GPU_TIMER_H__ */
