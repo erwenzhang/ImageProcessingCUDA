@@ -5,11 +5,11 @@
 //  Created by Wenwen on 11/10/16.
 //  Copyright © 2016 wenwen. All rights reserved.
 //
-
+using namespace std;
 #include <iostream>
 #include <string>
 #include <stdio.h>
-
+#include <fstream>
 #include "Image.h"
 #include "utils.h"
 #include "timer.h"
@@ -25,8 +25,8 @@ __global__ void gaussianBlur(const unsigned char* inputChannel, unsigned char* c
     float result = 0.f;
     for(int filterRow = -filterWidth/2; filterRow <= filterWidth/2; ++filterRow){
         for(int filterCol = -filterWidth/2; filterCol <= filterWidth/2; ++filterCol){
-            int imageR = min(max(thread2DPos.x+filterRow,0),static_cast<int> (numRows-1));
-            int imageC = min(max(thread2DPos.y+filterCol,0),static_cast<int> (numCols-1));
+            int imageR = min(max(thread2DPos.y+filterRow,0),static_cast<int> (numRows-1));
+            int imageC = min(max(thread2DPos.x+filterCol,0),static_cast<int> (numCols-1));
             float imageVal = static_cast<float> (inputChannel[imageR*numCols + imageC]);
             float filterVal = filter[(filterRow+filterWidth/2)*filterWidth + filterCol + filterWidth/2];
                                                               
@@ -41,7 +41,7 @@ __global__ void gaussianBlur(const unsigned char* inputChannel, unsigned char* c
 __global__ void separateChannels(const Image::Rgb* inputImageDevice, int numRows, int numCols, unsigned char* const redChannel,unsigned char* const greenChannel, unsigned char* const blueChannel){
     const int2 thread2DPos = make_int2(blockIdx.x*blockDim.x+threadIdx.x,blockIdx.y*blockDim.y+threadIdx.y);
     const int thread1DPos = thread2DPos.y * numCols + thread2DPos.x;
-                                                              
+    printf("hello from Thread: %d, %d, %d, %d\n", blockIdx.x, blockIdx.y, threadIdx.x, threadIdx.y);                                              
     if(thread2DPos.x >= numCols ||thread2DPos.y >= numRows) return;
     redChannel[thread1DPos] = inputImageDevice[thread1DPos].r;
     greenChannel[thread1DPos] = inputImageDevice[thread1DPos].g;
@@ -87,24 +87,24 @@ void gaussianBlur(Image::Rgb* const inputImageDevice,
                   const int filterWidth){
     const dim3 blockSize(32,32,1);
     const dim3 gridSize(numCols/32+1,numRows/32+1,1);
-    
-    separateChannels<<<gridSize,blockSize>>>(inputImageDevice,numRows,numCols,red,green,blue
-                                             );
+    printf("entering the gaussianBlur\n");
+    printf("numCols is %d, numRows is %d, grid: %d, %d\n", numCols, numRows, numCols/32, numRows/32);
+    separateChannels<<<gridSize,blockSize>>>(inputImageDevice,numRows,numCols,red,green,blue);
     cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
     
-    // gaussianBlur<<<gridSize, blockSize>>>(red, redBlurredDevice, numRows, numCols, filterDevice, filterWidth);
-    // gaussianBlur<<<gridSize, blockSize>>>(green, greenBlurredDevice, numRows, numCols, filterDevice, filterWidth);
-    // gaussianBlur<<<gridSize, blockSize>>>(blue, blueBlurredDevice, numRows, numCols, filterDevice, filterWidth);
+    gaussianBlur<<<gridSize, blockSize>>>(red, redBlurredDevice, numRows, numCols, filterDevice, filterWidth);
+    gaussianBlur<<<gridSize, blockSize>>>(green, greenBlurredDevice, numRows, numCols, filterDevice, filterWidth);
+    gaussianBlur<<<gridSize, blockSize>>>(blue, blueBlurredDevice, numRows, numCols, filterDevice, filterWidth);
 
     cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
 
-    // combineChannels<<<gridSize, blockSize>>>(redBlurredDevice,
-    //                                         greenBlurredDevice,
-    //                                         blueBlurredDevice,
-    //                                         outputImageDevice,
-    //                                         numRows,
-    //                                         numCols);
-    cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
+    combineChannels<<<gridSize, blockSize>>>(redBlurredDevice,
+                                             greenBlurredDevice,
+                                             blueBlurredDevice,
+                                             outputImageDevice,
+                                             numRows,
+                                             numCols);
+     cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
 }
 
 
@@ -113,34 +113,40 @@ Image imageOutput;
 Image::Rgb* inputImageDMarker;
 Image::Rgb* outputimageDMarker;
 float* filterHostMarker;
-void loadImagePPM(Image imageInput, Image imageOutput, const char* filename){
-    FILE * fptr = fopen(filename, "r"); 
-    if (!fptr) {
-        printf("!! Error in opening data file \n"); 
-        exit(1); 
-    }
-    std::string type;
-    int w, h, x;
-    fscanf(fptr, "%s",type);
-    fscanf(fptr,"%d",w);
-    fscanf(fptr,"%d",h);
-    fscanf(fptr,"%d",x);
-    char pix[3];
-    imageInput.rows = h;
-    imageInput.cols = w;
-    imageOutput.pixels = new Image::Rgb[w*h];
-    imageInput.pixels = new Image::Rgb[w*h];
-    for(int i = 0; i < w*h; i++){
-      fgets(pix, 3, (FILE*)fptr);
-      imageInput.pixels[i].r = static_cast<unsigned char>(pix[0]);
-      imageInput.pixels[i].g = static_cast<unsigned char>(pix[1]);
-      imageInput.pixels[i].b = static_cast<unsigned char>(pix[2]);
-    }
-  
-    
-    fclose(fptr); 
-}
+Image readPPM(const char *filename)
+{
+    ifstream ifs(filename,ifstream::in);
+//    ifs.open(filename, std::ios::binary); // need to spec. binary mode for Windows users
 
+    Image img;
+    try {
+        if (ifs.fail()) { throw("Can't open input file"); }
+        std::string header;
+        int w, h, b;
+        ifs >> header;
+        if (strcmp(header.c_str(), "P6") != 0) throw("Can't read input file");
+        ifs >> w >> h >> b;
+        img.w = w; img.h = h;
+	imageInput.rows = h;
+	imageInput.cols = w;
+        img.pixels = new Image::Rgb[w * h]; // this is throw an exception if bad_alloc
+        ifs.ignore(256, '\n'); // skip empty lines in necessary until we get to the binary data
+        unsigned char pix[3];
+        // read each pixel one by one and convert bytes to floats
+        for (int i = 0; i < w * h; ++i) {
+            ifs.read(reinterpret_cast<char *>(pix), 3);
+            img.pixels[i].r = pix[0] / 255.f;
+            img.pixels[i].g = pix[1] / 255.f;
+           img.pixels[i].b = pix[2] / 255.f;
+        }
+        ifs.close();
+    }
+    catch (const char *err) {
+        fprintf(stderr, "%s\n", err);
+        ifs.close();
+    }
+    return img;
+}
 void saveImagePPM(const char* filename, Image::Rgb* outputImageHost){
     int w = imageInput.cols;
     int h = imageInput.rows;
@@ -165,18 +171,17 @@ void saveImagePPM(const char* filename, Image::Rgb* outputImageHost){
 
 void preProcess(const char *filename, Image::Rgb ** inputImageHost, Image::Rgb ** outputImageHost, Image::Rgb ** inputImageDevice, Image::Rgb **outputImageDevice, unsigned char ** redBlurredDevice, unsigned char ** greenBlurredDevice, unsigned char **blueBlurredDevice){
     
-    checkCudaErrors(cudaFree(0));
+//    checkCudaErrors(cudaFree(0));
+  printf("entering Preprocessing\n"); 
+  Image inputImage = readPPM("lena.ppm");
    
-    loadImagePPM(imageInput, imageOutput, filename);
- 
-    
     *inputImageHost = (Image::Rgb *)imageInput.pixels;
     *outputImageHost = (Image::Rgb *)imageOutput.pixels;
     
     const size_t numPixels = imageInput.rows*imageInput.cols;
     
-    checkCudaErrors(cudaMalloc(inputImageDevice,sizeof(Image::Rgb)*numPixels));
-    checkCudaErrors(cudaMalloc(outputImageDevice,sizeof(Image::Rgb)*numPixels));
+    checkCudaErrors(cudaMalloc((void**)inputImageDevice,sizeof(Image::Rgb)*numPixels));
+    checkCudaErrors(cudaMalloc((void**)outputImageDevice,sizeof(Image::Rgb)*numPixels));
     checkCudaErrors(cudaMemset(*outputImageDevice,0,sizeof(Image::Rgb)*numPixels));
     
     checkCudaErrors(cudaMemcpy(*inputImageDevice, *inputImageHost,sizeof(Image::Rgb)*numPixels, cudaMemcpyHostToDevice));
@@ -184,13 +189,13 @@ void preProcess(const char *filename, Image::Rgb ** inputImageHost, Image::Rgb *
     inputImageDMarker = *inputImageDevice;
     outputimageDMarker = *outputImageDevice;
     
-    checkCudaErrors(cudaMalloc(redBlurredDevice,    sizeof(unsigned char) * numPixels));
-    checkCudaErrors(cudaMalloc(greenBlurredDevice,  sizeof(unsigned char) * numPixels));
-    checkCudaErrors(cudaMalloc(blueBlurredDevice,   sizeof(unsigned char) * numPixels));
+    checkCudaErrors(cudaMalloc((void**)redBlurredDevice,    sizeof(unsigned char) * numPixels));
+    checkCudaErrors(cudaMalloc((void**)greenBlurredDevice,  sizeof(unsigned char) * numPixels));
+    checkCudaErrors(cudaMalloc((void**)blueBlurredDevice,   sizeof(unsigned char) * numPixels));
     checkCudaErrors(cudaMemset(*redBlurredDevice,   0, sizeof(unsigned char) * numPixels));
     checkCudaErrors(cudaMemset(*greenBlurredDevice, 0, sizeof(unsigned char) * numPixels));
     checkCudaErrors(cudaMemset(*blueBlurredDevice,  0, sizeof(unsigned char) * numPixels));
-    
+   
 }
 
 
@@ -246,9 +251,10 @@ int main(int argc, const char * argv[]) {
     
     float* filterHost;
     int filterWidth;
-    
+    printf("Start of the program");
     preProcess("./lena.ppm", &inputImageHost, &outputImageHost, &inputImageDevice, &outputImageDevice, &redBlurredDecive, &greenBlurredDevice, &blueBlurredDevice);
-    
+ 
+	printf("after Preprocessing\n");   
     createFilter(&filterWidth, &filterHost);
     
     allocateMemoryAndCopyToGPU(imageInput.rows, imageInput.cols, filterHost, filterWidth);

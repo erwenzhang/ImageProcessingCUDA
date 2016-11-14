@@ -87,7 +87,7 @@ cudaMemcpyAsync(&a[offset], &d_a[offset], streamBytes,cudaMemcpyDeviceToHost, cu
 }
 
 \end{lstlisting}
-The code shown above is an example of invocation of multiple streams in CUDA. The code is divided into three parts, memory copy form Host to Device, kernel invocation, and memory copy from Device to Host. For memory copies, \textit{cudaMemcpyAsync()} is used. As described in last section, we have to allocate pinned memory using \textit{cudaMallocHost()}. This method place transfer into the stream and returns immediately. It is upto device to schedule streams when the corresponding resources are free. It allows us to put memory transfer operations and kernel operations into the stream the same time and allow them to run concurrently. \par
+The code shown above is an example of invocation of multiple streams in CUDA. The code is divided into three parts, memory copy form Host to Device, kernel invocation, and memory copy from Device to Host. For memory copies, \textit{cudaMemcpyAsync()} is used. As described in last section, we have to allocate pinned memory using \textit{cudaMallocHost()}. This method place transfer into the stream and returns immediately. It is upto device to schedule streams when the corresponding resources are free. It allows us to put memory transfer operations and kernel operations into the stream the same time and allow them to run concurrently.\cite{Stream} \par
 
 \begin{figure}[h]
 	\centering\includegraphics[width=120mm]{concurrent.png}
@@ -103,6 +103,8 @@ Harries, M. (2012, December). How to Optimize Data Transfers in CUDA C/C++. Retr
 \bibitem{Trade_off} 
 Boyer, M. Choosing Between Pinned and Non-Pinned Memory. Retrieved from https://www.cs.virginia.edu/~mwb7w/cuda_support/pinned_tradeoff.html
 	
+\bibitem{Stream} 
+Harries, M. (2012, December). How to Overlap Data Transfers in CUDA C/C++. Retrieved from https://devblogs.nvidia.com/parallelforall/how-overlap-data-transfers-cuda-cc/
 	
 
 \end{thebibliography}

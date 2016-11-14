@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  13 NOV 2016 19:25
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  13 NOV 2016 19:35
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -842,21 +842,27 @@ Underfull \hbox (badness 10000) in paragraph at lines 104--105
 -trieved from
  []
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 110.
+
+Underfull \hbox (badness 10000) in paragraph at lines 107--108
+[]\OT1/ptm/m/n/9 Harries, M. (2012, De-cem-ber). How to Over-lap Data Trans-fer
+s in CUDA C/C++. Re-trieved from
+ []
+
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 112.
 [3] [4 <./concurrent.png>]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 110.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 112.
  (./report.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 110.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 110.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 112.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 112.
 Package rerunfilecheck Info: File `report.out' has not changed.
 (rerunfilecheck)             Checksum: A95699EC843E19352F0CB97D67A53FA4;364.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 110.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 112.
  ) 
 Here is how much of TeX's memory you used:
- 16895 strings out of 493014
- 287637 string characters out of 6133351
- 353170 words of memory out of 5000000
- 20274 multiletter control sequences out of 15000+600000
+ 16897 strings out of 493014
+ 287651 string characters out of 6133351
+ 353173 words of memory out of 5000000
+ 20275 multiletter control sequences out of 15000+600000
  32523 words of font info for 62 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  36i,5n,40p,10357b,1690s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -866,9 +872,9 @@ xlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/tex
 live/2016/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2016/
 texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2016/texmf-dist
 /fonts/type1/urw/times/utmri8a.pfb>
-Output written on report.pdf (4 pages, 195253 bytes).
+Output written on report.pdf (4 pages, 195413 bytes).
 PDF statistics:
- 104 PDF objects out of 1000 (max. 8388607)
- 32 named destinations out of 1000 (max. 500000)
+ 105 PDF objects out of 1000 (max. 8388607)
+ 33 named destinations out of 1000 (max. 500000)
  72 words of extra memory for PDF output out of 10000 (max. 10000000)
 
