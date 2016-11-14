@@ -1,7 +1,7 @@
 
-\documentclass[letterpaper, 11 pt, conference]{ieeeconf}  % Comment this line out if you need a4paper
+\documentclass[journal,12pt,onecolumn,draftclsnofoot]{ieeeconf}  % Comment this line out if you need a4paper
 
-
+\usepackage{listings}
 \usepackage{hyperref}
 \usepackage{url}
 \usepackage[pdftex]{graphicx}
@@ -54,14 +54,14 @@
 \subsection{Pageable vs. Pinned Memory}
 Host data allocations are pageable by default, which means can be paged in/out between RAM and disk. However, GPU cannot access data directly from pageable memory, but from pinned memory, which means page-locked. Hence, whenever a data transfer is invoked on pageable memory, the CUDA driver has to allocate a temporary pinned memory array to copy host data and then transfer it to the device. \par
 \begin{figure}[h]
-	\centering\includegraphics[width=70mm]{pinned.jpg}
+	\centering\includegraphics[width=120mm]{pinned.jpg}
 	\caption{CUDA data transfer}
 	\label{CUDA data transfer.}
 	\cite{Mark}
 \end{figure}
 We can avoid the cost of this overhead by using pinned memory for host instead of pageable memory. In this case, we use \textit{cudaMallocHost()} and \textit{cudaFreeHost()}. Compare to the \textit{malloc()} and \textit{free()}, \textit{cudaMallocHost()} and \textit{cudaFreeHost()} are more expensive with additional overheads. Then, the question has been raised about how should we made the tradeoff. According to figure below, pinned memory is faster when the size of data to be transfered is larger than 16MB. \par
 \begin{figure}[h]
- 	\centering\includegraphics[width=70mm]{pinned_trade_off.png}
+ 	\centering\includegraphics[width=120mm]{pinned_trade_off.png}
  	\caption{Time required to allocate, transfer to the GPU, transfer back to the CPU, and deallocate pinned and non-pinned memory.}
  	\label{Time required to allocate, transfer to the GPU, transfer back to the CPU, and deallocate pinned and non-pinned memory.}
  	\cite{Trade_off}
@@ -69,6 +69,31 @@ We can avoid the cost of this overhead by using pinned memory for host instead o
 This doesn't means we should never use pinned memory when the amount of data to be transfered is less than 16MB. One example is the asynchronous memory copy, \textit{cudaMemcpyAsync()} can be used only with pinned memory. The details of how asynchronous memory copy would be used to improve the efficiency will be discussed in next section.
 
 \subsection{Streams}
+A stream is defined as a sequence of operations in that execute in issue-order on the GPU. CUDA operations, which are kernal operations and memory operations, in same streams are ordered and in different streams can overlap. By default, all operations are in default stream. The following code is used to specify which stream the operation is in. \par
+\begin{lstlisting}
+for (int i = 0; i < nStreams; ++i) {
+int offset = i * streamSize;
+cudaMemcpyAsync(&d_a[offset], &a[offset], streamBytes,cudaMemcpyHostToDevice, cudaMemcpyHostToDevice, stream[i]);
+}
+
+for (int i = 0; i < nStreams; ++i) {
+int offset = i * streamSize;
+kernel<<<streamSize/blockSize, blockSize, 0, stream[i]>>>(d_a, offset);
+}
+
+for (int i = 0; i < nStreams; ++i) {
+int offset = i * streamSize;
+cudaMemcpyAsync(&a[offset], &d_a[offset], streamBytes,cudaMemcpyDeviceToHost, cudaMemcpyDeviceToHost, stream[i]);
+}
+
+\end{lstlisting}
+The code shown above is an example of invocation of multiple streams in CUDA. The code is divided into three parts, memory copy form Host to Device, kernel invocation, and memory copy from Device to Host. For memory copies, \textit{cudaMemcpyAsync()} is used. As described in last section, we have to allocate pinned memory using \textit{cudaMallocHost()}. This method place transfer into the stream and returns immediately. It is upto device to schedule streams when the corresponding resources are free. It allows us to put memory transfer operations and kernel operations into the stream the same time and allow them to run concurrently. \par
+
+\begin{figure}[h]
+	\centering\includegraphics[width=120mm]{concurrent.png}
+	\caption{Top: all operation in default stream. Mid: concurrent streams with one copy engine. Bottom: concurrent streams with two copy engine.}
+	\label{Top: all operation in default stream. Mid: concurrent streams with one copy engine. Bottom: concurrent streams with two copy engine.}
+\end{figure}
 
 \bibliographystyle{abbrv}
 \begin{thebibliography}{9}
