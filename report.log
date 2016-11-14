@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  13 NOV 2016 20:37
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  13 NOV 2016 20:47
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -22,8 +22,8 @@ LaTeX Font Info:    Try loading font information for OT1+ptm on input line 794.
 (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/ot1ptm.fd
 File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
 )
+** ATTENTION: Single column mode is not normally used with IEEE publications.
 \@IEEEnormalsizefontbaselineskip=\skip41
-
 -- This is a 12 point document.
 \normalsizebaselineskip=\skip42
 \normaljot=\skip43
@@ -705,6 +705,7 @@ LaTeX Info: Redefining \addtolength on input line 81.
 \conditionsep=\skip77
 )
 ** ATTENTION: Overriding command lockouts (line 28).
+** ATTENTION: Overriding IEEE standard margins (line 30).
 (./report.aux)
 \openout1 = `report.aux'.
 
@@ -784,16 +785,18 @@ File: pinned.jpg Graphic file (type jpg)
  <use pinned.jpg>
 Package pdftex.def Info: pinned.jpg used on input line 57.
 (pdftex.def)             Requested size: 341.43306pt x 180.38492pt.
- [1{/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./pi
-nned.jpg>]
-<pinned_trade_off.png, id=49, 914.41624pt x 625.33624pt>
+
+<pinned_trade_off.png, id=40, 914.41624pt x 625.33624pt>
 File: pinned_trade_off.png Graphic file (type png)
 
 <use pinned_trade_off.png>
 Package pdftex.def Info: pinned_trade_off.png used on input line 63.
 (pdftex.def)             Requested size: 341.43306pt x 233.48907pt.
-LaTeX Font Info:    Try loading font information for OML+ptm on input line 73.
 
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+LaTeX Font Info:    Try loading font information for OML+ptm on input line 73.
 (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/omlptm.fd
 File: omlptm.fd 
 )
@@ -806,25 +809,21 @@ File: omsptm.fd
 )
 LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <12> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 73.
- [2 <./pinned_trade_off.png>]
-Overfull \hbox (343.85327pt too wide) in paragraph at lines 75--76
-[][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
+ [1{/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./pi
+nned.jpg>]
+Overfull \hbox (5.3152pt too wide) in paragraph at lines 75--76
+[][][][][][][][][][][][][][][][][][] 
  []
 
 
-Overfull \hbox (41.4502pt too wide) in paragraph at lines 80--81
-[][][][][][][][][][][][][][][][][][][][][][][][] 
+Overfull \hbox (5.3152pt too wide) in paragraph at lines 83--86
+[][][][][][][][][][][][][][][][][][] 
  []
 
-
-Overfull \hbox (343.85327pt too wide) in paragraph at lines 85--86
-[][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
- []
-
-<concurrent.png, id=55, 564.1075pt x 544.0325pt>
+<concurrent.png, id=50, 564.1075pt x 544.0325pt>
 File: concurrent.png Graphic file (type png)
  <use concurrent.png>
-Package pdftex.def Info: concurrent.png used on input line 93.
+Package pdftex.def Info: concurrent.png used on input line 91.
 (pdftex.def)             Requested size: 341.43306pt x 329.28595pt.
 
 
@@ -834,43 +833,44 @@ Missing character: There is no Â in font ptmr7t!
 Missing character: There is no ® in font ptmr7t!
 Missing character: There is no Â in font ptmr7t!
 Missing character: There is no ® in font ptmr7t!
-[3]
-Underfull \hbox (badness 10000) in paragraph at lines 107--108
+[2 <./pinned_trade_off.png>]
+Underfull \hbox (badness 10000) in paragraph at lines 105--106
 []\OT1/ptm/m/n/9 Harries, M. (2012, De-cem-ber). How to Op-ti-mize Data Trans-f
 ers in CUDA C/C++. Re-trieved from
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 110--111
+Overfull \hbox (56.70067pt too wide) in paragraph at lines 108--109
 []\OT1/ptm/m/n/9 Boyer, M. Choos-ing Be-tween Pinned and Non-Pinned Mem-ory. Re
--trieved from
+-trieved from https://www.cs.virginia.edu/ mwb7w/cuda_support/pinned_tradeoff.h
+tml 
  []
 
-[4 <./concurrent.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 113--114
+
+Underfull \hbox (badness 10000) in paragraph at lines 111--112
 []\OT1/ptm/m/n/9 Harries, M. (2012, De-cem-ber). How to Over-lap Data Trans-fer
 s in CUDA C/C++. Re-trieved from
  []
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 118.
-[5]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 118.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 116.
+[3 <./concurrent.png>]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 116.
  (./report.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 118.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 118.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 116.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 116.
 Package rerunfilecheck Info: File `report.out' has not changed.
 (rerunfilecheck)             Checksum: 94D3FDF2A9476B0B6A6EA3D84BAAD037;451.
 
 
 LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 118.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 116.
  ) 
 Here is how much of TeX's memory you used:
- 16902 strings out of 493014
- 287575 string characters out of 6133351
- 353193 words of memory out of 5000000
- 20277 multiletter control sequences out of 15000+600000
+ 16895 strings out of 493014
+ 287465 string characters out of 6133351
+ 352161 words of memory out of 5000000
+ 20275 multiletter control sequences out of 15000+600000
  32523 words of font info for 62 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  36i,5n,40p,10357b,1690s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -880,9 +880,9 @@ xlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/tex
 live/2016/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2016/
 texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2016/texmf-dist
 /fonts/type1/urw/times/utmri8a.pfb>
-Output written on report.pdf (5 pages, 197874 bytes).
+Output written on report.pdf (3 pages, 196356 bytes).
 PDF statistics:
- 117 PDF objects out of 1000 (max. 8388607)
- 36 named destinations out of 1000 (max. 500000)
+ 106 PDF objects out of 1000 (max. 8388607)
+ 31 named destinations out of 1000 (max. 500000)
  88 words of extra memory for PDF output out of 10000 (max. 10000000)
 

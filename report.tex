@@ -1,5 +1,5 @@
 
-\documentclass[journal,12pt,onecolumn,draftclsnofoot]{ieeeconf}  % Comment this line out if you need a4paper
+\documentclass[journal,12pt,onecolumn]{ieeeconf}  % Comment this line out if you need a4paper
 
 \usepackage{listings}
 \usepackage{hyperref}
@@ -71,17 +71,17 @@ A stream is defined as a sequence of operations in that execute in issue-order o
 
 \begin{lstlisting}
 for (int i = 0; i < nStreams; ++i) {
-int offset = i * streamSize;
-cudaMemcpyAsync(&d_a[offset], &a[offset], streamBytes,cudaMemcpyHostToDevice, cudaMemcpyHostToDevice, stream[i]);
+	int offset = i * streamSize;
+	cudaMemcpyAsync(&d_a,&a,size,cudaMemcpyHostToDevice,stream[i]);
 }
 for (int i = 0; i < nStreams; ++i) {
-int offset = i * streamSize;
-kernel<<<streamSize/blockSize, blockSize, 0, stream[i]>>>(d_a, offset);
+	int offset = i * streamSize;
+	kernel<<<blockSize,threadSize,0,stream[i]>>>(d_a,offset);
 }
 for (int i = 0; i < nStreams; ++i) {
-int offset = i * streamSize;
-cudaMemcpyAsync(&a[offset], &d_a[offset], streamBytes,cudaMemcpyDeviceToHost, cudaMemcpyDeviceToHost, stream[i]);
-}
+	int offset = i * streamSize;
+	cudaMemcpyAsync(&a,&d_a,size,cudaMemcpyDeviceToHost,stream[i]);
+
 
 \end{lstlisting}
 
