@@ -42,6 +42,7 @@ public:
 //        }
     }
     unsigned int w, h; // image resolution
+    unsigned int rows, cols;
     Rgb *pixels; // 1D array of pixels
     static const Rgb kBlack, kWhite, kRed, kGreen, kBlue; // preset colors
 };
