@@ -24,6 +24,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		F367EDD41DDBC9EA008C808E /* post_1.ppm */ = {isa = PBXFileReference; lastKnownFileType = text; path = post_1.ppm; sourceTree = "<group>"; };
+		F367EDD51DDBC9FB008C808E /* car_2.ppm */ = {isa = PBXFileReference; lastKnownFileType = text; path = car_2.ppm; sourceTree = "<group>"; };
+		F367EDD61DDBCA80008C808E /* cayuga_1.ppm */ = {isa = PBXFileReference; lastKnownFileType = text; path = cayuga_1.ppm; sourceTree = "<group>"; };
+		F367EDD71DDBCAA0008C808E /* falls_2.ppm */ = {isa = PBXFileReference; lastKnownFileType = text; path = falls_2.ppm; sourceTree = "<group>"; };
+		F367EDD91DDBD156008C808E /* donald-duck-bay-1024x1024.ppm */ = {isa = PBXFileReference; lastKnownFileType = text; path = "donald-duck-bay-1024x1024.ppm"; sourceTree = "<group>"; };
 		F3ACE3351DD2BD6B007AD6CE /* Gaussianblur */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Gaussianblur; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3ACE3381DD2BD6B007AD6CE /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		F3ACE33F1DD2BDEC007AD6CE /* gaussianblur.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gaussianblur.cpp; sourceTree = "<group>"; };
@@ -69,9 +74,14 @@
 		F3ACE3371DD2BD6B007AD6CE /* Gaussianblur */ = {
 			isa = PBXGroup;
 			children = (
+				F367EDD91DDBD156008C808E /* donald-duck-bay-1024x1024.ppm */,
+				F367EDD71DDBCAA0008C808E /* falls_2.ppm */,
+				F367EDD51DDBC9FB008C808E /* car_2.ppm */,
 				F3ACE34A1DD41B0C007AD6CE /* stop01.ppm */,
+				F367EDD61DDBCA80008C808E /* cayuga_1.ppm */,
 				F3ACE3491DD40120007AD6CE /* test.txt */,
 				F3ACE3431DD3FDBD007AD6CE /* boxes_1.ppm */,
+				F367EDD41DDBC9EA008C808E /* post_1.ppm */,
 				F3ACE3441DD3FDBD007AD6CE /* house_1.ppm */,
 				F3ACE3451DD3FDBD007AD6CE /* synth_1.ppm */,
 				F3ACE3461DD3FDBD007AD6CE /* moreboxes_1.ppm */,
