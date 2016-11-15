@@ -11,6 +11,7 @@
 #include "timer.h"
 #include <cuda.h>
 #include <cuda_runtime.h>
+#include <cuda_profiler_api.h>//profile
 using namespace std;
 
 Image readPPM(const char *filename)
@@ -26,8 +27,8 @@ Image readPPM(const char *filename)
         if (strcmp(header.c_str(), "P6") != 0) throw("Can't read input file");
         ifs >> w >> h >> b;
         img.w = w; img.h = h;
-        // img.pixels = (Image::Rgb*)malloc(sizeof(Image::Rgb)*w*h);
-        cudaMallocHost((void**)&img.pixels,sizeof(Image::Rgb)*w*h);
+        // img.pixels = (unsigned char*)malloc(sizeof(unsigned char)*3*w*h);
+        cudaMallocHost((void**)&img.pixels,sizeof(unsigned char)*3*w*h);
 
         // new Image::Rgb[w * h]; // this is throw an exception if bad_alloc
         ifs.ignore(256, '\n'); // skip empty lines in necessary until we get to the binary data
@@ -35,10 +36,12 @@ Image readPPM(const char *filename)
         // read each pixel one by one and convert bytes to floats
         for (int i = 0; i < w * h; ++i) {
             ifs.read(reinterpret_cast<char *>(pix), 3);
-            img.pixels[i].r = pix[0];// / 255.f;
-            img.pixels[i].g = pix[1];// / 255.f;
-            img.pixels[i].b = pix[2];// / 255.f;
+            img.pixels[i] = pix[0];// / 255.f;
+            img.pixels[w*h+i] = pix[1];// / 255.f;
+            img.pixels[2*w*h+i] = pix[2];// / 255.f;
         }
+        // 1d array
+
         ifs.close();
     }
     catch (const char *err) {
@@ -60,9 +63,13 @@ void savePPM(unsigned char* ptr, int w, int h, const char *filename)
         unsigned char r, g, b;
         // loop over each pixel in the image, clamp and convert to byte format
         for (int i = 0; i < w * h; ++i) {
-            r = static_cast<unsigned char>(std::min(255.f, ptr[i*3]*1.f));
-            g = static_cast<unsigned char>(std::min(255.f, ptr[i*3+1]*1.f));
-            b = static_cast<unsigned char>(std::min(255.f, ptr[i*3+2]*1.f));
+        	r = static_cast<unsigned char>(std::min(255.f, ptr[i]*1.f));
+        	g = static_cast<unsigned char>(std::min(255.f, ptr[w*h+i]*1.f));
+        	b = static_cast<unsigned char>(std::min(255.f, ptr[2*w*h+i]*1.f));
+
+            // r = static_cast<unsigned char>(std::min(255.f, ptr[i*3]*1.f));
+            // g = static_cast<unsigned char>(std::min(255.f, ptr[i*3+1]*1.f));
+            // b = static_cast<unsigned char>(std::min(255.f, ptr[i*3+2]*1.f));
             ofs << r << g << b;
         }
         ofs.close();
@@ -76,7 +83,7 @@ void savePPM(unsigned char* ptr, int w, int h, const char *filename)
 
 void createFilter(int filterWidth, float** filter){
     const int blurKernelWidth = filterWidth;
-    const float blurKernelSigma = 2.;
+    const float blurKernelSigma = 9.;
     *filter = new float[blurKernelWidth*blurKernelWidth];
     
     float filterSum = 0.f;
@@ -122,12 +129,12 @@ int main(int argc, const char * argv[]) {
     int w = inputImage.w, h = inputImage.h;
 
     float* filter;
-    int filterWidth = 9;
+    int filterWidth = 19;
     createFilter(filterWidth, &filter);
 
-    Image outputImage;
-    outputImage.w = w; outputImage.h = h;
-    outputImage.pixels = new Image::Rgb[w * h];  
+    // Image outputImage;
+    // outputImage.w = w; outputImage.h = h;
+    // cudaMallocHost((void**)&outputImage.pixels,sizeof(unsigned char)*3*w*h); //cudamalloc
 
     // timing start
     GpuTimer timer;
@@ -146,30 +153,38 @@ int main(int argc, const char * argv[]) {
     cudaMalloc((void **)&gpu_filter, filterWidth*filterWidth * sizeof(float));
 
 
-    unsigned char* ptr = &(inputImage.pixels[0].r);
+    unsigned char* ptr = &(inputImage.pixels[0]);
 
-    cudaMemcpy2D(input_r, sizeof(unsigned char), ptr, 3*sizeof(unsigned char), sizeof(unsigned char), w*h, cudaMemcpyHostToDevice);
-    cudaMemcpy2D(input_g, sizeof(unsigned char), ptr+1, 3*sizeof(unsigned char), sizeof(unsigned char), w*h, cudaMemcpyHostToDevice);
-    cudaMemcpy2D(input_b, sizeof(unsigned char), ptr+2, 3*sizeof(unsigned char), sizeof(unsigned char), w*h, cudaMemcpyHostToDevice);
+    // cudaMemcpy2D(input_r, sizeof(unsigned char), ptr, 3*sizeof(unsigned char), sizeof(unsigned char), w*h, cudaMemcpyHostToDevice);
+    // cudaMemcpy2D(input_g, sizeof(unsigned char), ptr+1, 3*sizeof(unsigned char), sizeof(unsigned char), w*h, cudaMemcpyHostToDevice);
+    // cudaMemcpy2D(input_b, sizeof(unsigned char), ptr+2, 3*sizeof(unsigned char), sizeof(unsigned char), w*h, cudaMemcpyHostToDevice);
+    cudaMemcpy(input_r, ptr, w*h*sizeof(unsigned char), cudaMemcpyHostToDevice);
+    cudaMemcpy(input_g, ptr+w*h, w*h*sizeof(unsigned char), cudaMemcpyHostToDevice);
+    cudaMemcpy(input_b, ptr+2*w*h, w*h*sizeof(unsigned char), cudaMemcpyHostToDevice);
     cudaMemcpy(gpu_filter, filter, filterWidth*filterWidth * sizeof(float), cudaMemcpyHostToDevice);
+
 
 
     const dim3 blockSize(32,32,1);
     const dim3 gridSize(w/32,h/32,1);
 
 
-
+//cudaProfilerStart();//profile
     gaussianBlur<<<gridSize, blockSize>>>(output_r, input_r, h, w, gpu_filter, filterWidth);   
-    cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
+	cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
     gaussianBlur<<<gridSize, blockSize>>>(output_g, input_g, h, w, gpu_filter, filterWidth);
     cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
     gaussianBlur<<<gridSize, blockSize>>>(output_b, input_b, h, w, gpu_filter, filterWidth);
     cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
+//cudaProfilerStop();//profile 
 
+    // cudaMemcpy2D(ptr, 3*sizeof(unsigned char), output_r, sizeof(unsigned char), sizeof(unsigned char),w*h, cudaMemcpyDeviceToHost);
+    // cudaMemcpy2D(ptr+1, 3*sizeof(unsigned char), output_g, sizeof(unsigned char), sizeof(unsigned char),w*h, cudaMemcpyDeviceToHost);
+    // cudaMemcpy2D(ptr+2, 3*sizeof(unsigned char), output_b, sizeof(unsigned char), sizeof(unsigned char),w*h, cudaMemcpyDeviceToHost);
 
-    cudaMemcpy2D(ptr, 3*sizeof(unsigned char), output_r, sizeof(unsigned char), sizeof(unsigned char),w*h, cudaMemcpyDeviceToHost);
-    cudaMemcpy2D(ptr+1, 3*sizeof(unsigned char), output_g, sizeof(unsigned char), sizeof(unsigned char),w*h, cudaMemcpyDeviceToHost);
-    cudaMemcpy2D(ptr+2, 3*sizeof(unsigned char), output_b, sizeof(unsigned char), sizeof(unsigned char),w*h, cudaMemcpyDeviceToHost);
+    cudaMemcpy(ptr, output_r, w*h*sizeof(unsigned char), cudaMemcpyDeviceToHost);
+    cudaMemcpy(ptr+w*h, output_g, w*h*sizeof(unsigned char), cudaMemcpyDeviceToHost);
+    cudaMemcpy(ptr+2*w*h, output_b, w*h*sizeof(unsigned char), cudaMemcpyDeviceToHost);
 
     cudaFree(input_r);
     cudaFree(input_g);
@@ -178,6 +193,8 @@ int main(int argc, const char * argv[]) {
     cudaFree(output_r);
     cudaFree(output_g);
     cudaFree(output_b);
+
+    
 
     // timing end
     timer.Stop();
