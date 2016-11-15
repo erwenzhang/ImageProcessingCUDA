@@ -128,19 +128,15 @@ __global__ void test_kernel(const float * d_in)
     printf("block %d, thread %d, value is %f\n", blockIdx.x, myId, d_in[myId]);
 }
 
-__global__ void gaussianBlur(float* outputChannel, const float* inputChannel, int numRows, int numCols, const float* const filter, const int filterWidth){
+__global__ void gaussianBlur(float* outputChannel, const float* inputChannel, int numRows, int numCols, const float* filter, const int filterWidth){
     const int2 thread2DPos = make_int2(blockIdx.x*blockDim.x+threadIdx.x,blockIdx.y*blockDim.y+threadIdx.y);
     const int thread1DPos = thread2DPos.y * numCols + thread2DPos.x;
-
-    // if(thread1DPos<1000)
-    //     printf("hello 1\n");
-    //     __syncthreads();
-
+    // printf("hello 1\n");
+    // printf("*filter: %f\n", *filter);
+    // printf("filter[0]: %f\n", filter[0]);
+    // printf("hello 2\n");
+    // __syncthreads();
     if(thread2DPos.x >= numCols || thread2DPos.y >= numRows) return;
-
-    // if(thread1DPos<1000)
-    //     printf("hello 2\n");
-    //     __syncthreads();
 
     float result = 0.f;
     for(int filterRow = -filterWidth/2; filterRow <= filterWidth/2; ++filterRow){
@@ -154,15 +150,18 @@ __global__ void gaussianBlur(float* outputChannel, const float* inputChannel, in
                 // printf("imageR: %d, imageC: %d\n", imageR, imageC);
                 // __syncthreads();
             float imageVal = static_cast<float> (inputChannel[imageR*numCols + imageC]);
-                if(thread1DPos<1000)
-                printf("imageVal %f\n", imageVal);
-                printf("filterVal %f\n", (filterRow+filterWidth/2)*filterWidth + filterCol + filterWidth/2);
+                if(thread1DPos<1000){
+                // printf("imageVal %f\n", imageVal);
+                printf("filterPos %d\n", (filterRow+filterWidth/2)*filterWidth + filterCol + filterWidth/2);
+                }
                 __syncthreads();
-            float filterVal = filter[(filterRow+filterWidth/2)*filterWidth + filterCol + filterWidth/2];
-                if(thread1DPos<1000)
+            // float filterVal = filter[static_cast<int>((filterRow+filterWidth/2)*filterWidth + filterCol + filterWidth/2)];
+            // float filterVal = filter[0];
+                // if(thread1DPos<1000)
                 // printf("filterVal %f\n", filterVal);
-                __syncthreads();                     
-            result += imageVal*filterVal;
+                // __syncthreads();                     
+            // result += imageVal*filterVal;
+                result += imageVal*0.01;
             if(thread1DPos<10000)
             printf("result %f\n", result);
             printf("hello 3\n");
@@ -191,13 +190,14 @@ int main(int argc, const char * argv[]) {
 
     float *input_r, *input_g, *input_b;
     float *output_r, *output_g, *output_b;
-
+    float* gpu_filter;
     cudaMalloc((void **)&input_r, w*h * sizeof(float));
     cudaMalloc((void **)&input_g, w*h * sizeof(float));
     cudaMalloc((void **)&input_b, w*h * sizeof(float));
     cudaMalloc((void **)&output_r, w*h * sizeof(float));
     cudaMalloc((void **)&output_g, w*h * sizeof(float));
     cudaMalloc((void **)&output_b, w*h * sizeof(float));
+    cudaMalloc((void **)&gpu_filter, filterWidth*filterWidth * sizeof(float));
 
 
     float* ptr = &(inputImage.pixels[0].r);
@@ -206,6 +206,8 @@ int main(int argc, const char * argv[]) {
     cudaMemcpy2D(input_g, sizeof(float), ptr+1, 3*sizeof(float), sizeof(float), w*h, cudaMemcpyHostToDevice);
     cudaMemcpy2D(input_b, sizeof(float), ptr+2, 3*sizeof(float), sizeof(float), w*h, cudaMemcpyHostToDevice);
 
+    cudaMemcpy(gpu_filter, filter, filterWidth*filterWidth * sizeof(float), cudaMemcpyHostToDevice);
+
     // int blocks = 256;
     // int threads = w*h/blocks;
     // test_kernel<<<blocks, threads>>>(input_r);
@@ -213,7 +215,7 @@ int main(int argc, const char * argv[]) {
     const dim3 blockSize(32,32,1);
     const dim3 gridSize(w/32,h/32,1);
 
-    gaussianBlur<<<gridSize, blockSize>>>(output_r, input_r, h, w, filter, filterWidth);
+    gaussianBlur<<<gridSize, blockSize>>>(output_r, input_r, h, w, gpu_filter, filterWidth);
     cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
     // gaussianBlur<<<gridSize, blockSize>>>(output_g, input_g, h, w, filter, filterWidth);
     // cudaDeviceSynchronize();
@@ -227,6 +229,8 @@ int main(int argc, const char * argv[]) {
     cudaFree(output_r);
     cudaFree(output_g);
     cudaFree(output_b);
+
+    cudaFree(gpu_filter);
 
 
 
