@@ -122,12 +122,12 @@ void gaussianBlur(const Image* inputImage, Image* outputImage, int numRows, int 
     }
 }
 
-__global__ void test_kernel(float* outputChannel, const float* inputChannel, int numRows, int numCols, const float * d_in, const int filterWidth)
+__global__ void test_kernel(float* outputChannel, const float* inputChannel, int numRows, int numCols, const float * filter, const int filterWidth)
 {
     const int2 thread2DPos = make_int2(blockIdx.x*blockDim.x+threadIdx.x,blockIdx.y*blockDim.y+threadIdx.y);
     const int thread1DPos = thread2DPos.y * numCols + thread2DPos.x;
     if(thread1DPos < 81)
-   	 printf("block %d, thread %d, value is %f\n", blockIdx.x, thread1DPos, d_in[thread1DPos]);
+     printf("block %d, thread %d, value is %f\n", blockIdx.x, thread1DPos, filter[thread1DPos]);
     if(thread2DPos.x >= numCols || thread2DPos.y >= numRows) return;
     float result = 0.f;
     for(int filterRow = -filterWidth/2; filterRow <= filterWidth/2; ++filterRow){
@@ -141,59 +141,60 @@ __global__ void test_kernel(float* outputChannel, const float* inputChannel, int
                 // printf("imageR: %d, imageC: %d\n", imageR, imageC);
                 // __syncthreads();
             float imageVal = static_cast<float> (inputChannel[imageR*numCols + imageC]);
-               result += imageVal*0.01;
-	}
-    }
-    outputChannel[thread1DPos] = result;
-}
-
-__global__ void gaussianBlur(float* outputChannel, const float* inputChannel, int numRows, int numCols, const float* filter, const int filterWidth){
-    const int2 thread2DPos = make_int2(blockIdx.x*blockDim.x+threadIdx.x,blockIdx.y*blockDim.y+threadIdx.y);
-    const int thread1DPos = thread2DPos.y * numCols + thread2DPos.x;
-    // printf("hello 1\n");
-    // printf("*filter: %f\n", *filter);
-    if( thread1DPos < 100){
-    printf("filter[0]: %f\n", filter[0]);
-    }
-    // printf("hello 2\n");
-    // __syncthreads();
-    if(thread2DPos.x >= numCols || thread2DPos.y >= numRows) return;
-
-    float result = 0.f;
-    for(int filterRow = -filterWidth/2; filterRow <= filterWidth/2; ++filterRow){
-        for(int filterCol = -filterWidth/2; filterCol <= filterWidth/2; ++filterCol){
-            // if(thread1DPos<1000)
-            //     printf("filterRow: %d, filterCol: %d\n", filterRow, filterCol);
-            //     __syncthreads();
-            int imageR = min(max(thread2DPos.y+filterRow,0),static_cast<int> (numRows-1));
-            int imageC = min(max(thread2DPos.x+filterCol,0),static_cast<int> (numCols-1));
-                // if(thread1DPos<1000)
-                // printf("imageR: %d, imageC: %d\n", imageR, imageC);
-                // __syncthreads();
-            float imageVal = static_cast<float> (inputChannel[imageR*numCols + imageC]);
-                if(thread1DPos<1000){
-                // printf("imageVal %f\n", imageVal);
-                printf("filterPos %d\n", (filterRow+filterWidth/2)*filterWidth + filterCol + filterWidth/2);
-                }
-                __syncthreads();
-            // float filterVal = filter[static_cast<int>((filterRow+filterWidth/2)*filterWidth + filterCol + filterWidth/2)];
-            // float filterVal = filter[0];
-                // if(thread1DPos<1000)
-                // printf("filterVal %f\n", filterVal);
-                // __syncthreads();                     
-            // result += imageVal*filterVal;
-                result += imageVal*0.01;
-            if(thread1DPos<10000)
-            printf("result %f\n", result);
-            printf("hello 3\n");
-            printf("thread1DPos %d, value is %f\n", thread1DPos, result);
+            float filterVal = filter[(filterRow+filterWidth/2)*filterWidth + filterCol + filterWidth/2];
+            result += imageVal*filterVal;
         }
     }
-                                                              
-    if(thread1DPos<100000)
-    printf("thread1DPos %d, value is %f\n", thread1DPos, result);
     outputChannel[thread1DPos] = result;
 }
+
+// __global__ void gaussianBlur(float* outputChannel, const float* inputChannel, int numRows, int numCols, const float* filter, const int filterWidth){
+//     const int2 thread2DPos = make_int2(blockIdx.x*blockDim.x+threadIdx.x,blockIdx.y*blockDim.y+threadIdx.y);
+//     const int thread1DPos = thread2DPos.y * numCols + thread2DPos.x;
+//     // printf("hello 1\n");
+//     // printf("*filter: %f\n", *filter);
+//     if( thread1DPos < 100){
+//     printf("filter[0]: %f\n", filter[0]);
+//     }
+//     // printf("hello 2\n");
+//     // __syncthreads();
+//     if(thread2DPos.x >= numCols || thread2DPos.y >= numRows) return;
+
+//     float result = 0.f;
+//     for(int filterRow = -filterWidth/2; filterRow <= filterWidth/2; ++filterRow){
+//         for(int filterCol = -filterWidth/2; filterCol <= filterWidth/2; ++filterCol){
+//             // if(thread1DPos<1000)
+//             //     printf("filterRow: %d, filterCol: %d\n", filterRow, filterCol);
+//             //     __syncthreads();
+//             int imageR = min(max(thread2DPos.y+filterRow,0),static_cast<int> (numRows-1));
+//             int imageC = min(max(thread2DPos.x+filterCol,0),static_cast<int> (numCols-1));
+//                 // if(thread1DPos<1000)
+//                 // printf("imageR: %d, imageC: %d\n", imageR, imageC);
+//                 // __syncthreads();
+//             float imageVal = static_cast<float> (inputChannel[imageR*numCols + imageC]);
+//                 if(thread1DPos<1000){
+//                 // printf("imageVal %f\n", imageVal);
+//                 printf("filterPos %d\n", (filterRow+filterWidth/2)*filterWidth + filterCol + filterWidth/2);
+//                 }
+//                 __syncthreads();
+//             // float filterVal = filter[static_cast<int>((filterRow+filterWidth/2)*filterWidth + filterCol + filterWidth/2)];
+//             // float filterVal = filter[0];
+//                 // if(thread1DPos<1000)
+//                 // printf("filterVal %f\n", filterVal);
+//                 // __syncthreads();                     
+//             // result += imageVal*filterVal;
+//                 result += imageVal*0.01;
+//             if(thread1DPos<10000)
+//             printf("result %f\n", result);
+//             printf("hello 3\n");
+//             printf("thread1DPos %d, value is %f\n", thread1DPos, result);
+//         }
+//     }
+                                                              
+//     if(thread1DPos<100000)
+//     printf("thread1DPos %d, value is %f\n", thread1DPos, result);
+//     outputChannel[thread1DPos] = result;
+// }
 
 int main(int argc, const char * argv[]) {
     // insert code here...
@@ -222,6 +223,7 @@ int main(int argc, const char * argv[]) {
 
 
     float* ptr = &(inputImage.pixels[0].r);
+    printf("pre----r0 is %f, g1 is %f, b1 is %f\n", ptr[0], ptr[1], ptr[2]);
 
     cudaMemcpy2D(input_r, sizeof(float), ptr, 3*sizeof(float), sizeof(float), w*h, cudaMemcpyHostToDevice);
     cudaMemcpy2D(input_g, sizeof(float), ptr+1, 3*sizeof(float), sizeof(float), w*h, cudaMemcpyHostToDevice);
@@ -242,10 +244,10 @@ int main(int argc, const char * argv[]) {
     test_kernel<<<gridSize, blockSize>>>(output_b, input_b, h, w, gpu_filter, filterWidth);
     cudaDeviceSynchronize();
 
-    cudaMemcpy2D(ptr, 3*sizeof(float), output_r, sizeof(float), sizeof(float),w*h, cudaMemcpyHostToDevice);
-    cudaMemcpy2D(ptr+1, 3*sizeof(float), output_b, sizeof(float), sizeof(float),w*h, cudaMemcpyHostToDevice);
-    cudaMemcpy2D(ptr+2, 3*sizeof(float), output_g, sizeof(float), sizeof(float),w*h, cudaMemcpyHostToDevice);
-    printf("r0 is %f, b1 is %f, g1 is %f\n", ptr[0], ptr[1], ptr[2]);
+    cudaMemcpy2D(ptr, 3*sizeof(float), output_r, sizeof(float), sizeof(float),w*h, cudaMemcpyDeviceToHost);
+    cudaMemcpy2D(ptr+1, 3*sizeof(float), output_g, sizeof(float), sizeof(float),w*h, cudaMemcpyDeviceToHost);
+    cudaMemcpy2D(ptr+2, 3*sizeof(float), output_b, sizeof(float), sizeof(float),w*h, cudaMemcpyDeviceToHost);
+    printf("post----r0 is %f, g1 is %f, b1 is %f\n", ptr[0], ptr[1], ptr[2]);
 
     cudaFree(input_r);
     cudaFree(input_g);
