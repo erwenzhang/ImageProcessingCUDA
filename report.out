@@ -1,9 +1,12 @@
 \BOOKMARK [1][-]{section.1}{Abstract}{}% 1
 \BOOKMARK [1][-]{section.2}{Introduction}{}% 2
-\BOOKMARK [1][-]{section.3}{Gaussian filter}{}% 3
-\BOOKMARK [1][-]{section.4}{Optimization}{}% 4
-\BOOKMARK [2][-]{subsection.4.1}{Pageable vs. Pinned Memory}{section.4}% 5
-\BOOKMARK [2][-]{subsection.4.2}{Streams}{section.4}% 6
-\BOOKMARK [1][-]{section.5}{Results}{}% 7
-\BOOKMARK [1][-]{section.6}{Conclusion}{}% 8
-\BOOKMARK [1][-]{section*.4}{References}{}% 9
+\BOOKMARK [1][-]{section.3}{Gaussian blur}{}% 3
+\BOOKMARK [2][-]{subsection.3.1}{Definition and Usage}{section.3}% 4
+\BOOKMARK [2][-]{subsection.3.2}{Serialization Implementation}{section.3}% 5
+\BOOKMARK [2][-]{subsection.3.3}{Parallel Implementation}{section.3}% 6
+\BOOKMARK [1][-]{section.4}{Optimization}{}% 7
+\BOOKMARK [2][-]{subsection.4.1}{Pageable vs. Pinned Memory}{section.4}% 8
+\BOOKMARK [2][-]{subsection.4.2}{Streams}{section.4}% 9
+\BOOKMARK [1][-]{section.5}{Results}{}% 10
+\BOOKMARK [1][-]{section.6}{Conclusion}{}% 11
+\BOOKMARK [1][-]{section*.5}{References}{}% 12

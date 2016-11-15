@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  13 NOV 2016 20:47
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  14 NOV 2016 18:40
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -22,8 +22,8 @@ LaTeX Font Info:    Try loading font information for OT1+ptm on input line 794.
 (/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/ot1ptm.fd
 File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
 )
-** ATTENTION: Single column mode is not normally used with IEEE publications.
 \@IEEEnormalsizefontbaselineskip=\skip41
+
 -- This is a 12 point document.
 \normalsizebaselineskip=\skip42
 \normaljot=\skip43
@@ -705,7 +705,6 @@ LaTeX Info: Redefining \addtolength on input line 81.
 \conditionsep=\skip77
 )
 ** ATTENTION: Overriding command lockouts (line 28).
-** ATTENTION: Overriding IEEE standard margins (line 30).
 (./report.aux)
 \openout1 = `report.aux'.
 
@@ -779,51 +778,44 @@ Package caption Info: wrapfig package is loaded.
 Package caption Info: End \AtBeginDocument code.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <17> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 41.
+LaTeX Font Info:    Try loading font information for U+msa on input line 61.
 
-<pinned.jpg, id=39, 1027.84pt x 543.02875pt>
+(/usr/local/texlive/2016/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Try loading font information for U+msb on input line 61.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+) [1{/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+LaTeX Font Info:    Try loading font information for OT1+phv on input line 90.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/ot1phv.fd
+File: ot1phv.fd 2001/06/04 scalable font definitions for OT1/phv.
+) [2]
+<pinned.jpg, id=70, 1027.84pt x 543.02875pt>
 File: pinned.jpg Graphic file (type jpg)
  <use pinned.jpg>
-Package pdftex.def Info: pinned.jpg used on input line 57.
+Package pdftex.def Info: pinned.jpg used on input line 104.
 (pdftex.def)             Requested size: 341.43306pt x 180.38492pt.
 
-<pinned_trade_off.png, id=40, 914.41624pt x 625.33624pt>
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+<pinned_trade_off.png, id=71, 914.41624pt x 625.33624pt>
 File: pinned_trade_off.png Graphic file (type png)
 
 <use pinned_trade_off.png>
-Package pdftex.def Info: pinned_trade_off.png used on input line 63.
+Package pdftex.def Info: pinned_trade_off.png used on input line 110.
 (pdftex.def)             Requested size: 341.43306pt x 233.48907pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-LaTeX Font Info:    Try loading font information for OML+ptm on input line 73.
-(/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/omlptm.fd
-File: omlptm.fd 
-)
-LaTeX Font Info:    Font shape `OML/ptm/m/n' in size <12> not available
-(Font)              Font shape `OML/cmm/m/it' tried instead on input line 73.
-LaTeX Font Info:    Try loading font information for OMS+ptm on input line 73.
-
-(/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/omsptm.fd
-File: omsptm.fd 
-)
-LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <12> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 73.
- [1{/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./pi
-nned.jpg>]
-Overfull \hbox (5.3152pt too wide) in paragraph at lines 75--76
-[][][][][][][][][][][][][][][][][][] 
- []
-
-
-Overfull \hbox (5.3152pt too wide) in paragraph at lines 83--86
-[][][][][][][][][][][][][][][][][][] 
- []
-
-<concurrent.png, id=50, 564.1075pt x 544.0325pt>
+[3] <concurrent.png, id=78, 564.1075pt x 544.0325pt>
 File: concurrent.png Graphic file (type png)
  <use concurrent.png>
-Package pdftex.def Info: concurrent.png used on input line 91.
+Package pdftex.def Info: concurrent.png used on input line 122.
 (pdftex.def)             Requested size: 341.43306pt x 329.28595pt.
 
 
@@ -833,56 +825,61 @@ Missing character: There is no Â in font ptmr7t!
 Missing character: There is no ® in font ptmr7t!
 Missing character: There is no Â in font ptmr7t!
 Missing character: There is no ® in font ptmr7t!
-[2 <./pinned_trade_off.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 105--106
+[4 <./pinned.jpg>]
+Underfull \hbox (badness 10000) in paragraph at lines 141--142
 []\OT1/ptm/m/n/9 Harries, M. (2012, De-cem-ber). How to Op-ti-mize Data Trans-f
 ers in CUDA C/C++. Re-trieved from
  []
 
 
-Overfull \hbox (56.70067pt too wide) in paragraph at lines 108--109
+Underfull \hbox (badness 10000) in paragraph at lines 144--145
 []\OT1/ptm/m/n/9 Boyer, M. Choos-ing Be-tween Pinned and Non-Pinned Mem-ory. Re
--trieved from https://www.cs.virginia.edu/ mwb7w/cuda_support/pinned_tradeoff.h
-tml 
+-trieved from
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 111--112
+Underfull \hbox (badness 10000) in paragraph at lines 147--148
 []\OT1/ptm/m/n/9 Harries, M. (2012, De-cem-ber). How to Over-lap Data Trans-fer
 s in CUDA C/C++. Re-trieved from
  []
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 116.
-[3 <./concurrent.png>]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 116.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 152.
+[5 <./pinned_trade_off.png>] [6 <./concurrent.png>]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 152.
  (./report.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 116.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 116.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 152.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 152.
 Package rerunfilecheck Info: File `report.out' has not changed.
-(rerunfilecheck)             Checksum: 94D3FDF2A9476B0B6A6EA3D84BAAD037;451.
+(rerunfilecheck)             Checksum: 5F75DCB7110924C0AEDF0298C5F88699;670.
 
 
 LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 116.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 152.
  ) 
 Here is how much of TeX's memory you used:
- 16895 strings out of 493014
- 287465 string characters out of 6133351
- 352161 words of memory out of 5000000
- 20275 multiletter control sequences out of 15000+600000
- 32523 words of font info for 62 fonts, out of 8000000 for 9000
+ 16971 strings out of 493014
+ 288319 string characters out of 6133351
+ 346204 words of memory out of 5000000
+ 20327 multiletter control sequences out of 15000+600000
+ 42189 words of font info for 90 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 36i,5n,40p,10357b,1690s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 36i,6n,40p,10391b,329s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
 exlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/local/te
-xlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/tex
-live/2016/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2016/
-texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2016/texmf-dist
-/fonts/type1/urw/times/utmri8a.pfb>
-Output written on report.pdf (3 pages, 196356 bytes).
+xlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/local/texl
+ive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texliv
+e/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2
+016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2016
+/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2016/
+texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2016/te
+xmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2016/texmf-dis
+t/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/ty
+pe1/urw/times/utmr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1/urw/ti
+mes/utmri8a.pfb>
+Output written on report.pdf (6 pages, 252974 bytes).
 PDF statistics:
- 106 PDF objects out of 1000 (max. 8388607)
- 31 named destinations out of 1000 (max. 500000)
- 88 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 143 PDF objects out of 1000 (max. 8388607)
+ 27 named destinations out of 1000 (max. 500000)
+ 112 words of extra memory for PDF output out of 10000 (max. 10000000)
 

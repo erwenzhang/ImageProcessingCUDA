@@ -16,29 +16,35 @@
 \gdef\HyperFirstAtBeginDocument#1{#1}
 \providecommand\HyField@AuxAddToFields[1]{}
 \providecommand\HyField@AuxAddToCoFields[2]{}
-\citation{Mark}
-\citation{Mark}
-\citation{Trade_off}
-\citation{Trade_off}
-\citation{Trade_off}
+\citation{1}
 \@writefile{toc}{\contentsline {section}{\numberline {I}Abstract}{1}{section.1}}
 \@writefile{toc}{\contentsline {section}{\numberline {II}Introduction}{1}{section.2}}
-\@writefile{toc}{\contentsline {section}{\numberline {III}Gaussian filter}{1}{section.3}}
-\@writefile{toc}{\contentsline {section}{\numberline {IV}Optimization}{1}{section.4}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {IV-A}Pageable vs. Pinned Memory}{1}{subsection.4.1}}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces CUDA data transfer.\cite  {Mark}\relax }}{1}{figure.caption.1}}
-\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
-\newlabel{CUDA data transfer.}{{1}{1}{CUDA data transfer.\cite {Mark}\relax }{figure.caption.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {IV-B}Streams}{1}{subsection.4.2}}
+\@writefile{toc}{\contentsline {section}{\numberline {III}Gaussian blur}{1}{section.3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {III-A}Definition and Usage}{1}{subsection.3.1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {III-B}Serialization Implementation}{2}{subsection.3.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {III-C}Parallel Implementation}{2}{subsection.3.3}}
+\@writefile{toc}{\contentsline {section}{\numberline {IV}Optimization}{2}{section.4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {IV-A}Pageable vs. Pinned Memory}{2}{subsection.4.1}}
+\citation{Mark}
+\citation{Mark}
+\citation{Trade_off}
+\citation{Trade_off}
+\citation{Trade_off}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Pseudo-code for Gaussian blur\relax }}{3}{figure.caption.1}}
 \citation{Stream}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Time required to allocate, transfer to the GPU, transfer back to the CPU, and deallocate pinned and non-pinned memory.\cite  {Trade_off}\relax }}{2}{figure.caption.2}}
-\newlabel{Time required to allocate, transfer to the GPU, transfer back to the CPU, and deallocate pinned and non-pinned memory.}{{2}{2}{Time required to allocate, transfer to the GPU, transfer back to the CPU, and deallocate pinned and non-pinned memory.\cite {Trade_off}\relax }{figure.caption.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {V}Results}{2}{section.5}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces CUDA data transfer.\cite  {Mark}\relax }}{4}{figure.caption.2}}
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{CUDA data transfer.}{{2}{4}{CUDA data transfer.\cite {Mark}\relax }{figure.caption.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {IV-B}Streams}{4}{subsection.4.2}}
 \bibstyle{abbrv}
-\bibcite{Mark}{1}
-\bibcite{Trade_off}{2}
-\bibcite{Stream}{3}
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Top: all operation in default stream. Mid: concurrent streams with one copy engine. Bottom: concurrent streams with two copy engine.\relax }}{3}{figure.caption.3}}
-\newlabel{concurrent}{{3}{3}{Top: all operation in default stream. Mid: concurrent streams with one copy engine. Bottom: concurrent streams with two copy engine.\relax }{figure.caption.3}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {VI}Conclusion}{3}{section.6}}
-\@writefile{toc}{\contentsline {section}{References}{3}{section*.4}}
+\bibcite{1}{1}
+\bibcite{Mark}{2}
+\bibcite{Trade_off}{3}
+\bibcite{Stream}{4}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Time required to allocate, transfer to the GPU, transfer back to the CPU, and deallocate pinned and non-pinned memory.\cite  {Trade_off}\relax }}{5}{figure.caption.3}}
+\newlabel{Time required to allocate, transfer to the GPU, transfer back to the CPU, and deallocate pinned and non-pinned memory.}{{3}{5}{Time required to allocate, transfer to the GPU, transfer back to the CPU, and deallocate pinned and non-pinned memory.\cite {Trade_off}\relax }{figure.caption.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {V}Results}{5}{section.5}}
+\@writefile{toc}{\contentsline {section}{\numberline {VI}Conclusion}{5}{section.6}}
+\@writefile{toc}{\contentsline {section}{References}{5}{section*.5}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Top: all operation in default stream. Mid: concurrent streams with one copy engine. Bottom: concurrent streams with two copy engine.\relax }}{6}{figure.caption.4}}
+\newlabel{concurrent}{{4}{6}{Top: all operation in default stream. Mid: concurrent streams with one copy engine. Bottom: concurrent streams with two copy engine.\relax }{figure.caption.4}{}}

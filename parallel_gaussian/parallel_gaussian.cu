@@ -45,21 +45,21 @@ Image readPPM(const char *filename)
     return img;
 }
 
-void savePPM(const Image &img, const char *filename)
+void savePPM(float* ptr, int w, int h, const char *filename)
 {
 
-    if (img.w == 0 || img.h == 0) { fprintf(stderr, "Can't save an empty image\n"); return; }
+    if (w == 0 || h == 0) { fprintf(stderr, "Can't save an empty image\n"); return; }
     std::ofstream ofs;
     try {
         ofs.open(filename, std::ios::binary); // need to spec. binary mode for Windows users
         if (ofs.fail()) throw("Can't open output file");
-        ofs << "P6\n" << img.w << " " << img.h << "\n255\n";
+        ofs << "P6\n" << w << " " << h << "\n255\n";
         unsigned char r, g, b;
         // loop over each pixel in the image, clamp and convert to byte format
-        for (int i = 0; i < img.w * img.h; ++i) {
-            r = static_cast<unsigned char>(std::min(1.f, img.pixels[i].r) * 255);
-            g = static_cast<unsigned char>(std::min(1.f, img.pixels[i].g) * 255);
-            b = static_cast<unsigned char>(std::min(1.f, img.pixels[i].b) * 255);
+        for (int i = 0; i < w * h; ++i) {
+            r = static_cast<unsigned char>(std::min(1.f, ptr[i*3]) * 255);
+            g = static_cast<unsigned char>(std::min(1.f, ptr[i*3+1]) * 255);
+            b = static_cast<unsigned char>(std::min(1.f, ptr[i*3+2]) * 255);
             ofs << r << g << b;
         }
         ofs.close();
@@ -69,6 +69,7 @@ void savePPM(const Image &img, const char *filename)
         ofs.close();
     }
 }
+
 
 void createFilter(int filterWidth, float** filter){
     const int blurKernelWidth = filterWidth;
@@ -121,11 +122,29 @@ void gaussianBlur(const Image* inputImage, Image* outputImage, int numRows, int 
     }
 }
 
-__global__ void test_kernel(const float * d_in)
+__global__ void test_kernel(float* outputChannel, const float* inputChannel, int numRows, int numCols, const float * d_in, const int filterWidth)
 {
-    int myId = threadIdx.x + blockDim.x * blockIdx.x;
-    if(blockIdx.x<10 && threadIdx.x<100)
-    printf("block %d, thread %d, value is %f\n", blockIdx.x, myId, d_in[myId]);
+    const int2 thread2DPos = make_int2(blockIdx.x*blockDim.x+threadIdx.x,blockIdx.y*blockDim.y+threadIdx.y);
+    const int thread1DPos = thread2DPos.y * numCols + thread2DPos.x;
+    if(thread1DPos < 81)
+   	 printf("block %d, thread %d, value is %f\n", blockIdx.x, thread1DPos, d_in[thread1DPos]);
+    if(thread2DPos.x >= numCols || thread2DPos.y >= numRows) return;
+    float result = 0.f;
+    for(int filterRow = -filterWidth/2; filterRow <= filterWidth/2; ++filterRow){
+        for(int filterCol = -filterWidth/2; filterCol <= filterWidth/2; ++filterCol){
+            // if(thread1DPos<1000)
+            //     printf("filterRow: %d, filterCol: %d\n", filterRow, filterCol);
+            //     __syncthreads();
+            int imageR = min(max(thread2DPos.y+filterRow,0),static_cast<int> (numRows-1));
+            int imageC = min(max(thread2DPos.x+filterCol,0),static_cast<int> (numCols-1));
+                // if(thread1DPos<1000)
+                // printf("imageR: %d, imageC: %d\n", imageR, imageC);
+                // __syncthreads();
+            float imageVal = static_cast<float> (inputChannel[imageR*numCols + imageC]);
+               result += imageVal*0.01;
+	}
+    }
+    outputChannel[thread1DPos] = result;
 }
 
 __global__ void gaussianBlur(float* outputChannel, const float* inputChannel, int numRows, int numCols, const float* filter, const int filterWidth){
@@ -133,7 +152,9 @@ __global__ void gaussianBlur(float* outputChannel, const float* inputChannel, in
     const int thread1DPos = thread2DPos.y * numCols + thread2DPos.x;
     // printf("hello 1\n");
     // printf("*filter: %f\n", *filter);
-    // printf("filter[0]: %f\n", filter[0]);
+    if( thread1DPos < 100){
+    printf("filter[0]: %f\n", filter[0]);
+    }
     // printf("hello 2\n");
     // __syncthreads();
     if(thread2DPos.x >= numCols || thread2DPos.y >= numRows) return;
@@ -205,22 +226,26 @@ int main(int argc, const char * argv[]) {
     cudaMemcpy2D(input_r, sizeof(float), ptr, 3*sizeof(float), sizeof(float), w*h, cudaMemcpyHostToDevice);
     cudaMemcpy2D(input_g, sizeof(float), ptr+1, 3*sizeof(float), sizeof(float), w*h, cudaMemcpyHostToDevice);
     cudaMemcpy2D(input_b, sizeof(float), ptr+2, 3*sizeof(float), sizeof(float), w*h, cudaMemcpyHostToDevice);
-
+    printf("filter at 0 is %f\n", filter[0]);
     cudaMemcpy(gpu_filter, filter, filterWidth*filterWidth * sizeof(float), cudaMemcpyHostToDevice);
 
     // int blocks = 256;
     // int threads = w*h/blocks;
-    // test_kernel<<<blocks, threads>>>(input_r);
 
     const dim3 blockSize(32,32,1);
     const dim3 gridSize(w/32,h/32,1);
-
-    gaussianBlur<<<gridSize, blockSize>>>(output_r, input_r, h, w, gpu_filter, filterWidth);
+    test_kernel<<<gridSize, blockSize>>>(output_r, input_r, h, w, gpu_filter, filterWidth);   
+    //gaussianBlur<<<gridSize, blockSize>>>(output_r, input_r, h, w, gpu_filter, filterWidth);
     cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
-    // gaussianBlur<<<gridSize, blockSize>>>(output_g, input_g, h, w, filter, filterWidth);
-    // cudaDeviceSynchronize();
-    // gaussianBlur<<<gridSize, blockSize>>>(output_b, input_b, h, w, filter, filterWidth);
-    // cudaDeviceSynchronize();
+    test_kernel<<<gridSize, blockSize>>>(output_g, input_g, h, w, gpu_filter, filterWidth);
+    cudaDeviceSynchronize();
+    test_kernel<<<gridSize, blockSize>>>(output_b, input_b, h, w, gpu_filter, filterWidth);
+    cudaDeviceSynchronize();
+
+    cudaMemcpy2D(ptr, 3*sizeof(float), output_r, sizeof(float), sizeof(float),w*h, cudaMemcpyHostToDevice);
+    cudaMemcpy2D(ptr+1, 3*sizeof(float), output_b, sizeof(float), sizeof(float),w*h, cudaMemcpyHostToDevice);
+    cudaMemcpy2D(ptr+2, 3*sizeof(float), output_g, sizeof(float), sizeof(float),w*h, cudaMemcpyHostToDevice);
+    printf("r0 is %f, b1 is %f, g1 is %f\n", ptr[0], ptr[1], ptr[2]);
 
     cudaFree(input_r);
     cudaFree(input_g);
@@ -230,13 +255,14 @@ int main(int argc, const char * argv[]) {
     cudaFree(output_g);
     cudaFree(output_b);
 
+    printf("finished here\n");
     cudaFree(gpu_filter);
 
 
 
     // gaussianBlur(&inputImage, &outputImage, h, w, filter, filterWidth);
-
-    // savePPM(outputImage,"result.ppm");
+    savePPM(ptr, w, h,"result.ppm");
+    printf("output finished\n");
 
     return 0;
 }
