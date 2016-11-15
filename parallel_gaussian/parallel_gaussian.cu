@@ -26,7 +26,8 @@ Image readPPM(const char *filename)
         if (strcmp(header.c_str(), "P6") != 0) throw("Can't read input file");
         ifs >> w >> h >> b;
         img.w = w; img.h = h;
-        img.pixels = (Image::Rgb*)malloc(sizeof(Image::Rgb)*w*h);
+        // img.pixels = (Image::Rgb*)malloc(sizeof(Image::Rgb)*w*h);
+        cudaMallocHost((void**)&img.pixels,sizeof(Image::Rgb)*w*h);
 
         // new Image::Rgb[w * h]; // this is throw an exception if bad_alloc
         ifs.ignore(256, '\n'); // skip empty lines in necessary until we get to the binary data
@@ -34,9 +35,9 @@ Image readPPM(const char *filename)
         // read each pixel one by one and convert bytes to floats
         for (int i = 0; i < w * h; ++i) {
             ifs.read(reinterpret_cast<char *>(pix), 3);
-            img.pixels[i].r = pix[0] / 255.f;
-            img.pixels[i].g = pix[1] / 255.f;
-            img.pixels[i].b = pix[2] / 255.f;
+            img.pixels[i].r = pix[0];// / 255.f;
+            img.pixels[i].g = pix[1];// / 255.f;
+            img.pixels[i].b = pix[2];// / 255.f;
         }
         ifs.close();
     }
@@ -47,7 +48,7 @@ Image readPPM(const char *filename)
     return img;
 }
 
-void savePPM(float* ptr, int w, int h, const char *filename)
+void savePPM(unsigned char* ptr, int w, int h, const char *filename)
 {
 
     if (w == 0 || h == 0) { fprintf(stderr, "Can't save an empty image\n"); return; }
@@ -59,9 +60,9 @@ void savePPM(float* ptr, int w, int h, const char *filename)
         unsigned char r, g, b;
         // loop over each pixel in the image, clamp and convert to byte format
         for (int i = 0; i < w * h; ++i) {
-            r = static_cast<unsigned char>(std::min(1.f, ptr[i*3]) * 255);
-            g = static_cast<unsigned char>(std::min(1.f, ptr[i*3+1]) * 255);
-            b = static_cast<unsigned char>(std::min(1.f, ptr[i*3+2]) * 255);
+            r = static_cast<unsigned char>(std::min(255.f, ptr[i*3]*1.f));
+            g = static_cast<unsigned char>(std::min(255.f, ptr[i*3+1]*1.f));
+            b = static_cast<unsigned char>(std::min(255.f, ptr[i*3+2]*1.f));
             ofs << r << g << b;
         }
         ofs.close();
@@ -97,57 +98,22 @@ void createFilter(int filterWidth, float** filter){
     }
 }
 
-void gaussianBlur(const Image* inputImage, Image* outputImage, int numRows, int numCols, const float* const filter, const int filterWidth){
-    for(int i=0;i<numRows;i++){
-        for(int j=0;j<numCols;j++){
-            float result_r = 0.f;
-            float result_g = 0.f;
-            float result_b = 0.f;
-            for(int filterRow = -filterWidth/2; filterRow <= filterWidth/2; ++filterRow){
-                for(int filterCol = -filterWidth/2; filterCol <= filterWidth/2; ++filterCol){
-                    int imageR = min(max(i+filterRow,0),static_cast<int> (numRows-1));
-                    int imageC = min(max(j+filterCol,0),static_cast<int> (numCols-1));
-                    float filterVal = filter[(filterRow+filterWidth/2)*filterWidth + filterCol + filterWidth/2];
-                    float imageVal_r = static_cast<float> (inputImage->pixels[imageR*numCols + imageC].r);
-                    float imageVal_g = static_cast<float> (inputImage->pixels[imageR*numCols + imageC].g);
-                    float imageVal_b = static_cast<float> (inputImage->pixels[imageR*numCols + imageC].b);   
-                    result_r += imageVal_r*filterVal;
-                    result_g += imageVal_g*filterVal;
-                    result_b += imageVal_b*filterVal;
-                    
-                }
-            }
-            outputImage->pixels[i*numRows+j].r = result_r;
-            outputImage->pixels[i*numRows+j].g = result_g;
-            outputImage->pixels[i*numRows+j].b = result_b;
-        }
-    }
-}
-
-__global__ void gaussianBlur(float* outputChannel, const float* inputChannel, int numRows, int numCols, const float * filter, const int filterWidth)
+__global__ void gaussianBlur(unsigned char* outputChannel, const unsigned char* inputChannel, int numRows, int numCols, const float * filter, const int filterWidth)
 {
     const int2 thread2DPos = make_int2(blockIdx.x*blockDim.x+threadIdx.x,blockIdx.y*blockDim.y+threadIdx.y);
     const int thread1DPos = thread2DPos.y * numCols + thread2DPos.x;
-    // if(thread1DPos < 81)
-     // printf("block %d, thread %d, value is %f\n", blockIdx.x, thread1DPos, filter[thread1DPos]);
     if(thread2DPos.x >= numCols || thread2DPos.y >= numRows) return;
     float result = 0.f;
     for(int filterRow = -filterWidth/2; filterRow <= filterWidth/2; ++filterRow){
         for(int filterCol = -filterWidth/2; filterCol <= filterWidth/2; ++filterCol){
-            // if(thread1DPos<1000)
-            //     printf("filterRow: %d, filterCol: %d\n", filterRow, filterCol);
-            //     __syncthreads();
             int imageR = min(max(thread2DPos.y+filterRow,0),static_cast<int> (numRows-1));
             int imageC = min(max(thread2DPos.x+filterCol,0),static_cast<int> (numCols-1));
-                // if(thread1DPos<1000)
-                // printf("imageR: %d, imageC: %d\n", imageR, imageC);
-                // __syncthreads();
-            float imageVal = static_cast<float> (inputChannel[imageR*numCols + imageC]);
+            unsigned char imageVal = (inputChannel[imageR*numCols + imageC]);
             float filterVal = filter[(filterRow+filterWidth/2)*filterWidth + filterCol + filterWidth/2];
-            result += imageVal*filterVal;
+            result += (static_cast<float> (imageVal))*filterVal;
         }
     }
-    outputChannel[thread1DPos] = result;
+    outputChannel[thread1DPos] = static_cast<unsigned char>(result);
 }
 
 int main(int argc, const char * argv[]) {
@@ -168,23 +134,23 @@ int main(int argc, const char * argv[]) {
     timer.Start();
 
 
-    float *input_r, *input_g, *input_b;
-    float *output_r, *output_g, *output_b;
+    unsigned char *input_r, *input_g, *input_b;
+    unsigned char *output_r, *output_g, *output_b;
     float* gpu_filter;
-    cudaMalloc((void **)&input_r, w*h * sizeof(float));
-    cudaMalloc((void **)&input_g, w*h * sizeof(float));
-    cudaMalloc((void **)&input_b, w*h * sizeof(float));
-    cudaMalloc((void **)&output_r, w*h * sizeof(float));
-    cudaMalloc((void **)&output_g, w*h * sizeof(float));
-    cudaMalloc((void **)&output_b, w*h * sizeof(float));
+    cudaMalloc((void **)&input_r, w*h * sizeof(unsigned char));
+    cudaMalloc((void **)&input_g, w*h * sizeof(unsigned char));
+    cudaMalloc((void **)&input_b, w*h * sizeof(unsigned char));
+    cudaMalloc((void **)&output_r, w*h * sizeof(unsigned char));
+    cudaMalloc((void **)&output_g, w*h * sizeof(unsigned char));
+    cudaMalloc((void **)&output_b, w*h * sizeof(unsigned char));
     cudaMalloc((void **)&gpu_filter, filterWidth*filterWidth * sizeof(float));
 
 
-    float* ptr = &(inputImage.pixels[0].r);
+    unsigned char* ptr = &(inputImage.pixels[0].r);
 
-    cudaMemcpy2D(input_r, sizeof(float), ptr, 3*sizeof(float), sizeof(float), w*h, cudaMemcpyHostToDevice);
-    cudaMemcpy2D(input_g, sizeof(float), ptr+1, 3*sizeof(float), sizeof(float), w*h, cudaMemcpyHostToDevice);
-    cudaMemcpy2D(input_b, sizeof(float), ptr+2, 3*sizeof(float), sizeof(float), w*h, cudaMemcpyHostToDevice);
+    cudaMemcpy2D(input_r, sizeof(unsigned char), ptr, 3*sizeof(unsigned char), sizeof(unsigned char), w*h, cudaMemcpyHostToDevice);
+    cudaMemcpy2D(input_g, sizeof(unsigned char), ptr+1, 3*sizeof(unsigned char), sizeof(unsigned char), w*h, cudaMemcpyHostToDevice);
+    cudaMemcpy2D(input_b, sizeof(unsigned char), ptr+2, 3*sizeof(unsigned char), sizeof(unsigned char), w*h, cudaMemcpyHostToDevice);
     cudaMemcpy(gpu_filter, filter, filterWidth*filterWidth * sizeof(float), cudaMemcpyHostToDevice);
 
 
@@ -201,9 +167,9 @@ int main(int argc, const char * argv[]) {
     cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
 
 
-    cudaMemcpy2D(ptr, 3*sizeof(float), output_r, sizeof(float), sizeof(float),w*h, cudaMemcpyDeviceToHost);
-    cudaMemcpy2D(ptr+1, 3*sizeof(float), output_g, sizeof(float), sizeof(float),w*h, cudaMemcpyDeviceToHost);
-    cudaMemcpy2D(ptr+2, 3*sizeof(float), output_b, sizeof(float), sizeof(float),w*h, cudaMemcpyDeviceToHost);
+    cudaMemcpy2D(ptr, 3*sizeof(unsigned char), output_r, sizeof(unsigned char), sizeof(unsigned char),w*h, cudaMemcpyDeviceToHost);
+    cudaMemcpy2D(ptr+1, 3*sizeof(unsigned char), output_g, sizeof(unsigned char), sizeof(unsigned char),w*h, cudaMemcpyDeviceToHost);
+    cudaMemcpy2D(ptr+2, 3*sizeof(unsigned char), output_b, sizeof(unsigned char), sizeof(unsigned char),w*h, cudaMemcpyDeviceToHost);
 
     cudaFree(input_r);
     cudaFree(input_g);

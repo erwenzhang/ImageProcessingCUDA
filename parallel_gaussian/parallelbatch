@@ -8,4 +8,4 @@
 #SBATCH --mail-user=yichizhangmax@ece.utexas.edu # replace by your email
 #SBATCH --mail-type=begin  # email me when the job starts
 #SBATCH --mail-type=end    # email me when the job finishes
-./parallel
+nvprof ./parallel

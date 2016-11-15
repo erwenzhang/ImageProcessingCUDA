@@ -1,0 +1,47 @@
+Presentation Schedule
+--------------------
+(group number, Title, Team Members)
+Each team of three members gets nine minutes for class presentation.
+Each team of two members gets six minutes.
+
+Thursday November 17
+------------------
+2 Monitors with Aborts GLANTON, WILLIAM KIM, DOYOUNG VANDERWILP, BRADLEY
+21 Monitors with Aborts BURDEN, CASSIDY Mills, William SUBRAMANIAN, SHRUTI
+22 Concurrent Skiplist Algorithms BHADSAVLE, SARANG JAISIMHA, RAHUL SHANMUGHAM, NISHANTH
+9 Parallel Algorithms for Data Mining Gong, Hang QIN, SHUAI Sun, Haowei
+12 Parallel Work Scheduling and Work Distribution Mahboob, Muhammad Tripathi, Rohan Yadav, Harsh
+24 Parallel Priority Queue Algorithms BRANNEN, TRAVIS Yu, Jiaolong ZHAO, YANFENG
+15 Parallel GPU based Graph Algorithms SHALABI, JOSEPH Xu, Weihao Yang, Zihan
+20 Parallel CPU based Graph Algorithms Hsu, Hung-Ming Huang, Yi-Hao
+
+Tuesday November 22
+------------------
+14 Mutex Algorithms SUN, YU Yang, Zijiang Zhao, Yue
+0 Concurrent Hash Tables Hu, Changyong Wang, Shengwei Ye, Wei
+11 Concurrent Hash Tables Ding, Liheng Luo, Chunheng Sun, Ming
+5 Parallel GPU based Sorting Algorithms Nair, Shriya Ranganath, Aditi SRIVASTAVA, PRATEEK
+3 Parallel GPU based Algorithms for Matrix Computations DONG, HUI JIN, MINGZHOU Zhou, Tong
+17 Parallel GPU based Algorithms for Image Processing Crute, Henry Doan, Huy XU, XIN
+19 Parallel GPU based Algorithms for Image Processing Xu, Wenbo Zhang, Wenwen Zhang, Yichi
+13 CUDA Accelerated BVH BARTLING, MICHAEL CLINTON, TROKON
+
+Tuesday November 29
+------------------
+10 Concurrent/ Distributed Apps for iPhone/Android Kong, Chuiye SONG, SHUANG Zhang, Xiao
+4 V8 JavaScript Engine FU, BEN TUNG, ALVIN ROHAN, NAGAR
+
+EE 361C: Project Demo
+--------------------
+1 Parallel Algorithms for Text Analysis CORTES, NICOLAS JOSHI, JAYESH MANOHAR, VIJAY
+6 Mutex Algorithms BOGOWITZ, MASON BOWSER, NATHANIEL
+7 Parallel CPU based Sorting Algorithms PATEL, KUNAL ROYSAM, TEJAS NATHAN FAULKNER
+8 Parallel Algorithms for Data Mining Griffin, Michael SANCHEZ ALVARADO, ALDAIR
+16 Parallel Algorithms for Text Analysis SHAH, NISHIL TSAO, JAMES
+18 Parallel Priority Queue Algorithms COMER, RYAN HOUTH, VANNARA SAN PEDRO, ANTONIO
+23 Parallel CPU based Sorting Algorithms HUI, DARREN KWAN, IAN
+25 Parallel Algorithms for Text Analysis DEWEY, ZACHARY YI, ISSAC
+26 Parallel CPU based Graph Algorithms LY, ROBERT YANG, ELVIS
+27 Parallel GPU based Graph Algorithms JOHNSON, ABIGAIL KOMAROV, KONSTANTYN
+28 Parallel GPU based Sorting Algorithms Karunakaran, Leelabrindavanan Macon, Tye 
+
