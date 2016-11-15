@@ -26,7 +26,9 @@ Image readPPM(const char *filename)
         if (strcmp(header.c_str(), "P6") != 0) throw("Can't read input file");
         ifs >> w >> h >> b;
         img.w = w; img.h = h;
-        img.pixels = new Image::Rgb[w * h]; // this is throw an exception if bad_alloc
+        img.pixels = (Image::Rgb*)malloc(sizeof(Image::Rgb)*w*h);
+
+        // new Image::Rgb[w * h]; // this is throw an exception if bad_alloc
         ifs.ignore(256, '\n'); // skip empty lines in necessary until we get to the binary data
         unsigned char pix[3];
         // read each pixel one by one and convert bytes to floats
@@ -122,12 +124,12 @@ void gaussianBlur(const Image* inputImage, Image* outputImage, int numRows, int 
     }
 }
 
-__global__ void test_kernel(float* outputChannel, const float* inputChannel, int numRows, int numCols, const float * filter, const int filterWidth)
+__global__ void gaussianBlur(float* outputChannel, const float* inputChannel, int numRows, int numCols, const float * filter, const int filterWidth)
 {
     const int2 thread2DPos = make_int2(blockIdx.x*blockDim.x+threadIdx.x,blockIdx.y*blockDim.y+threadIdx.y);
     const int thread1DPos = thread2DPos.y * numCols + thread2DPos.x;
-    if(thread1DPos < 81)
-     printf("block %d, thread %d, value is %f\n", blockIdx.x, thread1DPos, filter[thread1DPos]);
+    // if(thread1DPos < 81)
+     // printf("block %d, thread %d, value is %f\n", blockIdx.x, thread1DPos, filter[thread1DPos]);
     if(thread2DPos.x >= numCols || thread2DPos.y >= numRows) return;
     float result = 0.f;
     for(int filterRow = -filterWidth/2; filterRow <= filterWidth/2; ++filterRow){
@@ -148,54 +150,6 @@ __global__ void test_kernel(float* outputChannel, const float* inputChannel, int
     outputChannel[thread1DPos] = result;
 }
 
-// __global__ void gaussianBlur(float* outputChannel, const float* inputChannel, int numRows, int numCols, const float* filter, const int filterWidth){
-//     const int2 thread2DPos = make_int2(blockIdx.x*blockDim.x+threadIdx.x,blockIdx.y*blockDim.y+threadIdx.y);
-//     const int thread1DPos = thread2DPos.y * numCols + thread2DPos.x;
-//     // printf("hello 1\n");
-//     // printf("*filter: %f\n", *filter);
-//     if( thread1DPos < 100){
-//     printf("filter[0]: %f\n", filter[0]);
-//     }
-//     // printf("hello 2\n");
-//     // __syncthreads();
-//     if(thread2DPos.x >= numCols || thread2DPos.y >= numRows) return;
-
-//     float result = 0.f;
-//     for(int filterRow = -filterWidth/2; filterRow <= filterWidth/2; ++filterRow){
-//         for(int filterCol = -filterWidth/2; filterCol <= filterWidth/2; ++filterCol){
-//             // if(thread1DPos<1000)
-//             //     printf("filterRow: %d, filterCol: %d\n", filterRow, filterCol);
-//             //     __syncthreads();
-//             int imageR = min(max(thread2DPos.y+filterRow,0),static_cast<int> (numRows-1));
-//             int imageC = min(max(thread2DPos.x+filterCol,0),static_cast<int> (numCols-1));
-//                 // if(thread1DPos<1000)
-//                 // printf("imageR: %d, imageC: %d\n", imageR, imageC);
-//                 // __syncthreads();
-//             float imageVal = static_cast<float> (inputChannel[imageR*numCols + imageC]);
-//                 if(thread1DPos<1000){
-//                 // printf("imageVal %f\n", imageVal);
-//                 printf("filterPos %d\n", (filterRow+filterWidth/2)*filterWidth + filterCol + filterWidth/2);
-//                 }
-//                 __syncthreads();
-//             // float filterVal = filter[static_cast<int>((filterRow+filterWidth/2)*filterWidth + filterCol + filterWidth/2)];
-//             // float filterVal = filter[0];
-//                 // if(thread1DPos<1000)
-//                 // printf("filterVal %f\n", filterVal);
-//                 // __syncthreads();                     
-//             // result += imageVal*filterVal;
-//                 result += imageVal*0.01;
-//             if(thread1DPos<10000)
-//             printf("result %f\n", result);
-//             printf("hello 3\n");
-//             printf("thread1DPos %d, value is %f\n", thread1DPos, result);
-//         }
-//     }
-                                                              
-//     if(thread1DPos<100000)
-//     printf("thread1DPos %d, value is %f\n", thread1DPos, result);
-//     outputChannel[thread1DPos] = result;
-// }
-
 int main(int argc, const char * argv[]) {
     // insert code here...
     Image inputImage = readPPM("lena.ppm");
@@ -208,6 +162,10 @@ int main(int argc, const char * argv[]) {
     Image outputImage;
     outputImage.w = w; outputImage.h = h;
     outputImage.pixels = new Image::Rgb[w * h];  
+
+    // timing start
+    GpuTimer timer;
+    timer.Start();
 
 
     float *input_r, *input_g, *input_b;
@@ -223,31 +181,29 @@ int main(int argc, const char * argv[]) {
 
 
     float* ptr = &(inputImage.pixels[0].r);
-    printf("pre----r0 is %f, g1 is %f, b1 is %f\n", ptr[0], ptr[1], ptr[2]);
 
     cudaMemcpy2D(input_r, sizeof(float), ptr, 3*sizeof(float), sizeof(float), w*h, cudaMemcpyHostToDevice);
     cudaMemcpy2D(input_g, sizeof(float), ptr+1, 3*sizeof(float), sizeof(float), w*h, cudaMemcpyHostToDevice);
     cudaMemcpy2D(input_b, sizeof(float), ptr+2, 3*sizeof(float), sizeof(float), w*h, cudaMemcpyHostToDevice);
-    printf("filter at 0 is %f\n", filter[0]);
     cudaMemcpy(gpu_filter, filter, filterWidth*filterWidth * sizeof(float), cudaMemcpyHostToDevice);
 
-    // int blocks = 256;
-    // int threads = w*h/blocks;
 
     const dim3 blockSize(32,32,1);
     const dim3 gridSize(w/32,h/32,1);
-    test_kernel<<<gridSize, blockSize>>>(output_r, input_r, h, w, gpu_filter, filterWidth);   
-    //gaussianBlur<<<gridSize, blockSize>>>(output_r, input_r, h, w, gpu_filter, filterWidth);
+
+
+
+    gaussianBlur<<<gridSize, blockSize>>>(output_r, input_r, h, w, gpu_filter, filterWidth);   
     cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
-    test_kernel<<<gridSize, blockSize>>>(output_g, input_g, h, w, gpu_filter, filterWidth);
-    cudaDeviceSynchronize();
-    test_kernel<<<gridSize, blockSize>>>(output_b, input_b, h, w, gpu_filter, filterWidth);
-    cudaDeviceSynchronize();
+    gaussianBlur<<<gridSize, blockSize>>>(output_g, input_g, h, w, gpu_filter, filterWidth);
+    cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
+    gaussianBlur<<<gridSize, blockSize>>>(output_b, input_b, h, w, gpu_filter, filterWidth);
+    cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
+
 
     cudaMemcpy2D(ptr, 3*sizeof(float), output_r, sizeof(float), sizeof(float),w*h, cudaMemcpyDeviceToHost);
     cudaMemcpy2D(ptr+1, 3*sizeof(float), output_g, sizeof(float), sizeof(float),w*h, cudaMemcpyDeviceToHost);
     cudaMemcpy2D(ptr+2, 3*sizeof(float), output_b, sizeof(float), sizeof(float),w*h, cudaMemcpyDeviceToHost);
-    printf("post----r0 is %f, g1 is %f, b1 is %f\n", ptr[0], ptr[1], ptr[2]);
 
     cudaFree(input_r);
     cudaFree(input_g);
@@ -257,12 +213,19 @@ int main(int argc, const char * argv[]) {
     cudaFree(output_g);
     cudaFree(output_b);
 
-    printf("finished here\n");
+    // timing end
+    timer.Stop();
+    int err = printf("Your code ran in: %f msecs.\n", timer.Elapsed());
+    
+    if (err < 0) {
+        //Couldn't print! Probably the student closed stdout - bad news
+        std::cerr << "Couldn't print timing information! STDOUT Closed!" << std::endl;
+        exit(1);
+    }
+
+    // printf("finished here\n");
     cudaFree(gpu_filter);
 
-
-
-    // gaussianBlur(&inputImage, &outputImage, h, w, filter, filterWidth);
     savePPM(ptr, w, h,"result.ppm");
     printf("output finished\n");
 
