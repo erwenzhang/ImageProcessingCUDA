@@ -1,0 +1,11 @@
+======== Warning: Metric "shared_utilization" cannot be found on device 0.
+======== Warning: Metric "special_fu_utilization" cannot be found on device 0.
+======== Warning: Metric "single_precision_fu_utilization" cannot be found on device 0.
+======== Warning: Metric "double_precision_fu_utilization" cannot be found on device 0.
+======== Warning: Metric "l2_tex_write_transactions" cannot be found on device 0.
+======== Warning: Metric "l2_tex_write_throughput" cannot be found on device 0.
+==13530== NVPROF is profiling process 13530, command: ./parallel
+==13530== Warning: Some kernel(s) will be replayed on device 0 in order to collect all events/metrics.
+==13530== Your code ran in: 10221.279297 msecs.
+output finished
+Generated result file: /home1/04367/yzhang7/project/yz9449/parallel/analysis.nvprof

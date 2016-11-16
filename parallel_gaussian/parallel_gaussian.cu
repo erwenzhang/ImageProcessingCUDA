@@ -125,7 +125,7 @@ __global__ void gaussianBlur(unsigned char* outputChannel, const unsigned char* 
 
 int main(int argc, const char * argv[]) {
     // insert code here...
-    Image inputImage = readPPM("lena.ppm");
+    Image inputImage = readPPM("bay.ppm");
     int w = inputImage.w, h = inputImage.h;
 
     float* filter;
@@ -169,14 +169,14 @@ int main(int argc, const char * argv[]) {
     const dim3 gridSize(w/32,h/32,1);
 
 
-//cudaProfilerStart();//profile
+cudaProfilerStart();//profile
     gaussianBlur<<<gridSize, blockSize>>>(output_r, input_r, h, w, gpu_filter, filterWidth);   
 	cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
     gaussianBlur<<<gridSize, blockSize>>>(output_g, input_g, h, w, gpu_filter, filterWidth);
     cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
     gaussianBlur<<<gridSize, blockSize>>>(output_b, input_b, h, w, gpu_filter, filterWidth);
     cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
-//cudaProfilerStop();//profile 
+cudaProfilerStop();//profile 
 
     // cudaMemcpy2D(ptr, 3*sizeof(unsigned char), output_r, sizeof(unsigned char), sizeof(unsigned char),w*h, cudaMemcpyDeviceToHost);
     // cudaMemcpy2D(ptr+1, 3*sizeof(unsigned char), output_g, sizeof(unsigned char), sizeof(unsigned char),w*h, cudaMemcpyDeviceToHost);
