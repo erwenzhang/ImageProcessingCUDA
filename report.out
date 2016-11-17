@@ -1,14 +1,13 @@
-\BOOKMARK [1][-]{section.1}{Abstract}{}% 1
-\BOOKMARK [1][-]{section.2}{Introduction}{}% 2
-\BOOKMARK [1][-]{section.3}{Gaussian blur}{}% 3
-\BOOKMARK [2][-]{subsection.3.1}{Definition and Usage}{section.3}% 4
-\BOOKMARK [2][-]{subsection.3.2}{Sequential Implementation}{section.3}% 5
-\BOOKMARK [2][-]{subsection.3.3}{Parallel Implementation}{section.3}% 6
-\BOOKMARK [1][-]{section.4}{Optimization}{}% 7
-\BOOKMARK [2][-]{subsection.4.1}{Shared memory v.s. Global Memory}{section.4}% 8
-\BOOKMARK [2][-]{subsection.4.2}{Pageable v.s. Pinned Memory}{section.4}% 9
-\BOOKMARK [2][-]{subsection.4.3}{Streams}{section.4}% 10
-\BOOKMARK [1][-]{section.5}{Results}{}% 11
-\BOOKMARK [1][-]{section.6}{Conclusion}{}% 12
-\BOOKMARK [1][-]{section*.6}{Appendix}{}% 13
-\BOOKMARK [1][-]{section*.9}{References}{}% 14
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{Gaussian blur}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Definition and Usage}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Sequential Implementation}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.3}{Parallel Implementation}{section.2}% 5
+\BOOKMARK [1][-]{section.3}{Optimization}{}% 6
+\BOOKMARK [2][-]{subsection.3.1}{Shared memory v.s. Global Memory}{section.3}% 7
+\BOOKMARK [2][-]{subsection.3.2}{Pageable v.s. Pinned Memory}{section.3}% 8
+\BOOKMARK [2][-]{subsection.3.3}{Streams}{section.3}% 9
+\BOOKMARK [1][-]{section.4}{Results}{}% 10
+\BOOKMARK [1][-]{section.5}{Conclusion}{}% 11
+\BOOKMARK [1][-]{section*.6}{Appendix}{}% 12
+\BOOKMARK [1][-]{section*.9}{References}{}% 13
