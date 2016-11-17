@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.11.19)  16 NOV 2016 20:53
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.11.19)  16 NOV 2016 21:03
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -707,11 +707,7 @@ LaTeX Info: Redefining \addtolength on input line 81.
 \conditionsep=\skip77
 )
 ** ATTENTION: Overriding command lockouts (line 28).
-(./report.aux
-
-LaTeX Warning: Label `parallel' multiply defined.
-
-)
+(./report.aux)
 \openout1 = `report.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 39.
@@ -731,7 +727,8 @@ LaTeX Font Info:    ... okay on input line 39.
 \c@lstlisting=\count178
 \AtBeginShipoutBox=\box55
 Package hyperref Info: Link coloring OFF on input line 39.
- (/usr/local/texlive/2015/texmf-dist/tex/latex/hyperref/nameref.sty
+
+(/usr/local/texlive/2015/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
 
 (/usr/local/texlive/2015/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
@@ -743,14 +740,14 @@ LaTeX Info: Redefining \ref on input line 39.
 LaTeX Info: Redefining \pageref on input line 39.
 LaTeX Info: Redefining \nameref on input line 39.
 
-(./report.out) (./report.out
-pdfTeX warning (Object streams): \pdfobjcompresslevel > 0 requires \pdfminorver
-sion > 4. Object streams disabled now.
-)
+(./report.out) (./report.out)
 \@outlinefile=\write3
 \openout3 = `report.out'.
 
- (/usr/local/texlive/2015/texmf-dist/tex/context/base/supp-pdf.mkii
+
+pdfTeX warning (Object streams): \pdfobjcompresslevel > 0 requires \pdfminorver
+sion > 4. Object streams disabled now.
+(/usr/local/texlive/2015/texmf-dist/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count180
 \scratchdimen=\dimen207
@@ -783,8 +780,11 @@ Package caption Info: wrapfig package is loaded.
 Package caption Info: End \AtBeginDocument code.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <17> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 41.
-LaTeX Font Info:    Try loading font information for U+msa on input line 61.
 
+
+LaTeX Warning: Citation `1' on page 1 undefined on input line 49.
+
+LaTeX Font Info:    Try loading font information for U+msa on input line 61.
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
@@ -793,17 +793,17 @@ LaTeX Font Info:    Try loading font information for U+msb on input line 61.
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) [1{/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-<ImageProcessingCuda.png, id=63, 595.22375pt x 582.175pt>
+<ImageProcessingCuda.png, id=15, 585.18625pt x 439.6425pt>
 File: ImageProcessingCuda.png Graphic file (type png)
 
 <use ImageProcessingCuda.png>
 Package pdftex.def Info: ImageProcessingCuda.png used on input line 72.
-(pdftex.def)             Requested size: 241.84538pt x 261.77202pt.
+(pdftex.def)             Requested size: 241.84769pt x 261.77501pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[2] <SharedMemory.png, id=76, 524.96124pt x 354.32375pt>
+[2] <SharedMemory.png, id=32, 524.96124pt x 354.32375pt>
 File: SharedMemory.png Graphic file (type png)
 
 <use SharedMemory.png>
@@ -813,17 +813,26 @@ Package pdftex.def Info: SharedMemory.png used on input line 85.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-<pinned.jpg, id=77, 1027.84pt x 543.02875pt>
+<pinned.jpg, id=33, 1027.84pt x 543.02875pt>
 File: pinned.jpg Graphic file (type jpg)
  <use pinned.jpg>
 Package pdftex.def Info: pinned.jpg used on input line 93.
 (pdftex.def)             Requested size: 341.43306pt x 180.38492pt.
 
 
+LaTeX Warning: Citation `Mark' on page 3 undefined on input line 94.
+
+
+LaTeX Warning: Citation `Mark' on page 3 undefined on input line 94.
+
+
 LaTeX Warning: `h' float specifier changed to `ht'.
 
+
+LaTeX Warning: Citation `Trade_off' on page 3 undefined on input line 97.
+
 [3 <./ImageProcessingCuda.png>]
-<pinned_trade_off.png, id=84, 914.41624pt x 625.33624pt>
+<pinned_trade_off.png, id=41, 914.41624pt x 625.33624pt>
 File: pinned_trade_off.png Graphic file (type png)
 
 <use pinned_trade_off.png>
@@ -831,12 +840,21 @@ Package pdftex.def Info: pinned_trade_off.png used on input line 99.
 (pdftex.def)             Requested size: 341.43306pt x 233.48907pt.
 
 
+LaTeX Warning: Citation `Trade_off' on page 4 undefined on input line 100.
+
+
+LaTeX Warning: Citation `Trade_off' on page 4 undefined on input line 100.
+
+
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[4 <./SharedMemory.png>] <concurrent.png, id=91, 564.1075pt x 544.0325pt>
-File: concurrent.png Graphic file (type png)
+[4 <./SharedMemory.png>]
 
-<use concurrent.png>
+LaTeX Warning: Citation `Stream' on page 5 undefined on input line 109.
+
+<concurrent.png, id=49, 564.1075pt x 544.0325pt>
+File: concurrent.png Graphic file (type png)
+ <use concurrent.png>
 Package pdftex.def Info: concurrent.png used on input line 111.
 (pdftex.def)             Requested size: 341.43306pt x 329.28595pt.
 
@@ -891,20 +909,29 @@ Package atveryend Info: Empty hook `AfterLastShipout' on input line 152.
  (./report.aux)
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 152.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 152.
-Package rerunfilecheck Info: File `report.out' has not changed.
-(rerunfilecheck)             Checksum: 20736513733D3CDE26FFD03507D5ECF9;750.
 
 
-LaTeX Warning: There were multiply-defined labels.
+Package rerunfilecheck Warning: File `report.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `report.out':
+(rerunfilecheck)             Before: D41D8CD98F00B204E9800998ECF8427E;0
+(rerunfilecheck)             After:  20736513733D3CDE26FFD03507D5ECF9;750.
+
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 152.
  ) 
 Here is how much of TeX's memory you used:
- 15905 strings out of 493089
- 268759 string characters out of 6134841
- 333494 words of memory out of 5000000
- 19204 multiletter control sequences out of 15000+600000
- 39322 words of font info for 87 fonts, out of 8000000 for 9000
+ 15892 strings out of 493089
+ 268589 string characters out of 6134841
+ 332953 words of memory out of 5000000
+ 19190 multiletter control sequences out of 15000+600000
+ 40429 words of font info for 88 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  38i,5n,38p,10391b,467s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
@@ -918,9 +945,9 @@ texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2015/te
 xmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2015/texmf-dist/f
 onts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1
 /urw/times/utmri8a.pfb>
-Output written on report.pdf (8 pages, 379701 bytes).
+Output written on report.pdf (8 pages, 375790 bytes).
 PDF statistics:
- 159 PDF objects out of 1000 (max. 8388607)
+ 119 PDF objects out of 1000 (max. 8388607)
  31 named destinations out of 1000 (max. 500000)
- 130 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 26 words of extra memory for PDF output out of 10000 (max. 10000000)
 
