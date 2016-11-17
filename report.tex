@@ -1,5 +1,5 @@
 
-\documentclass[journal,12pt,onecolumn,draftclsnofoot]{ieeeconf}  % Comment this line out if you need a4paper
+\documentclass[journal,11pt,onecolumn,draftclsnofoot]{ieeeconf}  % Comment this line out if you need a4paper
 
 \usepackage{listings}
 \usepackage{hyperref}
@@ -69,13 +69,14 @@ There are four steps of the sequential implementation. The first step is preproc
 In this chapter, we implemented a normal parallel version gaussian blurring based on CUDA. In the following chapter, we optimized this implementation in several ways.  Firstly, we read the image file and generate filter matrix. Then we need to copy the image into device memory. Each pixel is combined with three channels, $r$, $g$ and $b$.  They should be separated and be gaussian blurred separately. Then we start the kernel three times and do gaussian blurring to each channel per time.  At last, we copy three blurred channels from device to host and save them into an image file.This process is described with the Fig.1.
 
 \begin{figure}[h]
-	\centering\includegraphics[width=85mm,height=92mm]{ImageProcessingCuda.png}
+	\centering\includegraphics[width=85mm,height=80mm]{ImageProcessingCuda.png}
 	\caption{Diagram for Parallel Image Processing}
 	\label{parallel}
 \end{figure}
 
 
 \section{Optimization}
+
 \subsection{Shared memory v.s. Global Memory}
 In the previous version implementation of Gaussian blur, we store three channels in global memory, and access same global memory several times when we read neighbour channels. Since reading shared memory is much faster (shared memory ~$1.7TB/s$, while global memory ~ $150GB/s$), instead of pulling from global memory every time, we put channel values in the shared memory for other threads within the same block to see and reuse. 
 
@@ -88,30 +89,18 @@ In order to compute blurred channel values at the boundary of one block, we need
 \end{figure}
 
 \subsection{Pageable v.s. Pinned Memory}
-Host data allocations are pageable by default, which means can be paged in/out between RAM and disk. However, GPU cannot access data directly from pageable memory, but from pinned memory, which means page-locked. Hence, whenever a data transfer is invoked on pageable memory, the CUDA driver has to allocate a temporary pinned memory array to copy host data and then transfer it to the device. \par
+Host data allocations are pageable by default, However, GPU cannot access data directly from pageable memory, but from pinned memory. As shown in Figure \cite{Mark}, whenever a data transfer is invoked on pageable memory, the CUDA driver has to allocate a temporary pinned memory array to copy host data and then transfer it to the device. \par
 \begin{figure}[h]
 	\centering\includegraphics[width=120mm]{pinned.jpg}
 	\caption{CUDA data transfer.\cite{Mark}}
 	\label{CUDA data transfer.}
 \end{figure}
-We can avoid the cost of this overhead by using pinned memory for host instead of pageable memory. In this case, we use \textit{cudaMallocHost()} and \textit{cudaFreeHost()}. Compare to the \textit{malloc()} and \textit{free()}, \textit{cudaMallocHost()} and \textit{cudaFreeHost()} are more expensive with additional overheads. Then, the question has been raised about how should we made the tradeoff. According to figure below, pinned memory is faster when the size of data to be transfered is larger than 16MB.  	\cite{Trade_off}\par
-\begin{figure}[h]
- 	\centering\includegraphics[width=120mm]{pinned_trade_off.png}
- 	\caption{Time required to allocate, transfer to the GPU, transfer back to the CPU, and deallocate pinned and non-pinned memory.\cite{Trade_off}}
- 	\label{Time required to allocate, transfer to the GPU, transfer back to the CPU, and deallocate pinned and non-pinned memory.}
-\end{figure}
-This doesn't mean we should never use pinned memory when the amount of data to be transfered is less than 16MB. One example is the asynchronous memory copy, \textit{cudaMemcpyAsync()} can be used only with pinned memory. The details of how asynchronous memory copy would be used to improve the efficiency will be discussed in next section.
+We can use \textit{cudaMallocHost()} and \textit{cudaFreeHost()} instead of \textit{malloc()} and \textit{free()}, to remove the overhead described above. However, \textit{cudaMallocHost()} and \textit{cudaFreeHost()} are more expensive with additional overheads. According to Boyer\cite{Trade_off}, pinned memory is faster when the size of data to be transfered is larger than 16MB. \par
 
 \subsection{Streams}
-A stream is defined as a sequence of operations in that execute in issue-order on the GPU. CUDA operations, which are kernal operations and memory operations, in same streams are ordered and in different streams can overlap. By default, all operations are in default stream. The following code is used to specify which stream the operation is in. \par
+A stream is defined as a sequence of operations in that execute in issue-order on the GPU. A typical CUDA task consists of three operations, memcpy HToD, kernel, and memcpyDToH. Kernel operations in different streams may run concurrently as long as the hardware resources were available. For memory copies, one transfer per direction is allowed at any time. And memory copies in different streams are in different direction may run concurrently when hardware supports two copy engine.   \par
 
-The figure below illustrate the execution time line for three different scenarios. The top time line shows time line without use of streams, which all operations executes in sequential order. The time line in the middle shows the use of streams on hardware has only one copy engine. The performance improvement is significant. The bottom time line shows the time line for hardware has two copy engines. With two copy engines, the HD (Host to Device memory transfer) and the DH (Device to Host memory transfer) can execute concurrently without arbitrating for the same hardware. \par 
-For memory copies, \textit{cudaMemcpyAsync()} is used. As described in last section, we have to allocate pinned memory using \textit{cudaMallocHost()}. This method place transfer into the stream and returns immediately. It is upto device to schedule streams when the corresponding resources are free. It allows us to put memory transfer operations and kernel operations into the stream the same time and allow them to run concurrently.\cite{Stream} \par
-\begin{figure}[h]
-	\centering\includegraphics[width=120mm]{concurrent.png}
-	\caption{Top: all operation in default stream. Mid: concurrent streams with one copy engine. Bottom: concurrent streams with two copy engine.}
-	\label{concurrent}
-\end{figure}
+Figure \ref{concurrent} illustrates the execution time line for three different scenarios. In this project, the pipelined fashion was implemented. In order to pipeline the memory copies, asynchronous memory copiy functions, \textit{cudaMemcpyAsync()}, are used instead of synchronous functions.\cite{Stream} \par
 
 \section{Results}
 Both CPU and GPU implementations was running on the TACC Stampede Supercomputer. The CPU is IntelÂ® XeonÂ® E5-2680 2.7GHz Processors. And the GPU is NVIDIA K20 with 5120 MB GDDR5 memory and 2 copy engines. \par
@@ -119,9 +108,9 @@ The command line tool, nvprof, and the Nvidia Visual Profiler are used to profil
 
 \section{Conclusion} 
 In our project, we implemented Gaussian Filter to two images, lena.ppm$(512*512)$ and bay.ppm$(1024*1024)$ in both CPU sequential logic and GPU parallel logic. After making it work correctly, we implemented three improvements:  \\
-1.      We changed allocation method from allocating pageable memory to pinned memory \\
-2.      We modified sequential kernel execution into pipelined execution \\
-3.      We replaced global kernel method with shared memory method \\
+1.ï¿½ï¿½ï¿½ï¿½ï¿½ We changed allocation method from allocating pageable memory to pinned memory \\
+2.ï¿½ï¿½ï¿½ï¿½ï¿½ We modified sequential kernel execution into pipelined execution \\
+3.ï¿½ï¿½ï¿½ï¿½ï¿½ We replaced global kernel method with shared memory method \\
 
 According to the theory of Gaussian Filter, we started with implementing sequential algorithm in pure CPU environment. The original image and executed result image for lena.ppm(small-scale) are show in FIG.x, the execution time is XXX.
 //FIG.X
@@ -130,6 +119,21 @@ Next, since we found that the kernel took much percentage of the whole execution
 //FIG.x
 Finally, we used shared memory to avoid wasting time to read from global memory each time, and thus further improved the performance. Our final execution time for lena.ppm is XXX, which speeded up XXX from the very beginning.
 
+\clearpage
+\appendix
+\section{Appendix}
+\begin{figure}[h]
+	\centering\includegraphics[width=120mm]{pinned_trade_off.png}
+	\caption{Time required to allocate, transfer to the GPU, transfer back to the CPU, and deallocate pinned and non-pinned memory.\cite{Trade_off}}
+	\label{Time required to allocate, transfer to the GPU, transfer back to the CPU, and deallocate pinned and non-pinned memory.}
+\end{figure}
+\begin{figure}[h]
+	\centering\includegraphics[width=120mm]{concurrent.png}
+	\caption{Top: all operation in default stream. Mid: concurrent streams with one copy engine. Bottom: concurrent streams with two copy engine.}
+	\label{concurrent}
+\end{figure}
+
+\clearpage
 \bibliographystyle{abbrv}
 \begin{thebibliography}{9}
 \bibitem{1}
