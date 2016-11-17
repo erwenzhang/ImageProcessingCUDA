@@ -107,19 +107,133 @@ void createFilter(int filterWidth, float** filter){
 
 __global__ void gaussianBlur(unsigned char* outputChannel, const unsigned char* inputChannel, int numRows, int numCols, const float * filter, const int filterWidth)
 {
+    extern __shared__ unsigned char sharedChannel[];
     const int2 thread2DPos = make_int2(blockIdx.x*blockDim.x+threadIdx.x,blockIdx.y*blockDim.y+threadIdx.y);
     const int thread1DPos = thread2DPos.y * numCols + thread2DPos.x;
     if(thread2DPos.x >= numCols || thread2DPos.y >= numRows) return;
+    int halfWidth = filterWidth/2 ;
+    int newDim = blockDim.x + halfWidth*2;
+    int newX = threadIdx.x + halfWidth;
+    int newY = threadIdx.y + halfWidth;
+    sharedChannel[newY*newDim + newX] = inputChannel[thread1DPos];
+    // printf("cur pixel %d\n", inputChannel[thread1DPos]); 
+
+    if(threadIdx.x < halfWidth){         
+             
+           // sharedChannel[newY * newDim + newX - halfWidth] = 1;
+
+           if(threadIdx.y < halfWidth){
+                if(thread2DPos.x - halfWidth < 0){
+                    sharedChannel[newY * newDim + newX - halfWidth] = inputChannel[0];        
+
+                    sharedChannel[(newY - halfWidth) * newDim + newX - halfWidth] = inputChannel[0];
+
+                }else{
+                    sharedChannel[newY * newDim + newX - halfWidth] = inputChannel[thread1DPos - halfWidth];  
+                    if(thread2DPos.y - halfWidth < 0){
+                        sharedChannel[(newY - halfWidth) * newDim + newX - halfWidth] = inputChannel[0];    
+                    }else{
+                        sharedChannel[(newY - halfWidth) * newDim + newX - halfWidth] = inputChannel[thread1DPos - halfWidth*numCols - halfWidth];
+                    }  
+                } 
+            }else if(threadIdx.y > (blockDim.y - halfWidth -1)){
+                if(thread2DPos.x - halfWidth < 0){
+                    sharedChannel[newY * newDim + newX - halfWidth] = inputChannel[(numRows-1)*numCols+1];
+                    
+                    sharedChannel[(newY + halfWidth) * newDim + newX - halfWidth] = inputChannel[(numRows-1)*numCols+1];
+
+                }else{
+                    sharedChannel[newY * newDim + newX - halfWidth] = inputChannel[thread1DPos - halfWidth];   
+                   if(thread2DPos.y + halfWidth >= numRows){
+                        sharedChannel[(newY + halfWidth) * newDim + newX - halfWidth] = inputChannel[(numRows-1)*numCols+1];    
+                    }else{
+                        sharedChannel[(newY + halfWidth) * newDim + newX - halfWidth] = inputChannel[thread1DPos + halfWidth*numCols - halfWidth];
+                    } 
+
+                }
+
+            }else{
+                if(thread2DPos.x - halfWidth < 0){
+                    sharedChannel[newY * newDim + newX - halfWidth] = inputChannel[0];
+                }else{
+                    sharedChannel[newY * newDim + newX - halfWidth] = inputChannel[thread1DPos - halfWidth];   
+                }
+            }
+        
+    }
+
+
+    if(threadIdx.x >(blockDim.x-halfWidth-1)){
+         if(threadIdx.y < halfWidth){
+                if(thread2DPos.x + halfWidth >= numCols){
+                    sharedChannel[newY * newDim + newX + halfWidth] = inputChannel[numCols-1];        
+
+                    sharedChannel[(newY - halfWidth) * newDim + newX + halfWidth] = inputChannel[numCols-1];
+
+                }else{
+                    sharedChannel[newY * newDim + newX + halfWidth] = inputChannel[thread1DPos + halfWidth];  
+                    if(thread2DPos.y - halfWidth < 0){
+                        sharedChannel[(newY - halfWidth) * newDim + newX + halfWidth] = inputChannel[numCols-1];    
+                    }else{
+                        sharedChannel[(newY - halfWidth) * newDim + newX + halfWidth] = inputChannel[thread1DPos - halfWidth*numCols + halfWidth];
+                    }  
+                } 
+            }else if(threadIdx.y > (blockDim.y - halfWidth -1)){
+                if(thread2DPos.x + halfWidth >=numCols ){
+                    sharedChannel[newY * newDim + newX + halfWidth] = inputChannel[numCols*numRows-1];
+                    
+                    sharedChannel[(newY + halfWidth) * newDim + newX + halfWidth] = inputChannel[numCols*numRows-1];
+
+                }else{
+                    sharedChannel[newY * newDim + newX + halfWidth] = inputChannel[thread1DPos + halfWidth];   
+                    
+                    if(thread2DPos.y + halfWidth >= numRows){
+                        sharedChannel[(newY + halfWidth) * newDim + newX + halfWidth] = inputChannel[numCols*numRows-1];    
+                    }else{
+                        sharedChannel[(newY + halfWidth) * newDim + newX + halfWidth] = inputChannel[thread1DPos + halfWidth*numCols + halfWidth];
+                    } 
+
+                }
+
+            }else{
+                if(thread2DPos.x + halfWidth >= numCols){
+                    sharedChannel[newY * newDim + newX + halfWidth] = inputChannel[numCols*numRows-1];
+                }else{
+                    sharedChannel[newY * newDim + newX + halfWidth] = inputChannel[thread1DPos + halfWidth];   
+                }
+            }
+     }
+
+    if(threadIdx.y < halfWidth){
+        if(thread2DPos.y - halfWidth < 0){
+            sharedChannel[(newY - halfWidth)*newDim + newX] = 50;
+        }else{
+            sharedChannel[(newY - halfWidth)*newDim + newX] = inputChannel[thread1DPos - halfWidth*numCols];
+        }
+    }
+    if(threadIdx.y > (blockDim.y - halfWidth -1)){
+        if(thread2DPos.y + halfWidth >= numRows){
+            sharedChannel[(newY + halfWidth)*newDim + newX] = 50;
+        }else{
+            sharedChannel[(newY + halfWidth)*newDim + newX] = inputChannel[thread1DPos + halfWidth*numCols];
+        }
+    }
+
+    __syncthreads();
+    
     float result = 0.f;
     for(int filterRow = -filterWidth/2; filterRow <= filterWidth/2; ++filterRow){
         for(int filterCol = -filterWidth/2; filterCol <= filterWidth/2; ++filterCol){
-            int imageR = min(max(thread2DPos.y+filterRow,0),static_cast<int> (numRows-1));
-            int imageC = min(max(thread2DPos.x+filterCol,0),static_cast<int> (numCols-1));
-            unsigned char imageVal = (inputChannel[imageR*numCols + imageC]);
+            int blockR = threadIdx.y + filterRow + halfWidth;
+            int blockC = threadIdx.x + filterCol + halfWidth;
+            int imageVal = sharedChannel[blockR*newDim + blockC];
+            
             float filterVal = filter[(filterRow+filterWidth/2)*filterWidth + filterCol + filterWidth/2];
+
             result += (static_cast<float> (imageVal))*filterVal;
         }
     }
+   
     outputChannel[thread1DPos] = static_cast<unsigned char>(result);
 }
 
@@ -134,6 +248,7 @@ int main(int argc, const char * argv[]) {
     int nStream = 3;
     cudaStream_t stream[nStream];
 
+    int newWidth = 32 + filterWidth - 1;
 
     // timing start
     GpuTimer timer;
@@ -145,7 +260,6 @@ int main(int argc, const char * argv[]) {
     float* gpu_filter;
     cudaMalloc((void **)&gpu_filter, filterWidth*filterWidth * sizeof(float));
 
-//while loop begin
 
     unsigned char *input_r, *input_g, *input_b;
     unsigned char *output_r, *output_g, *output_b;
@@ -163,23 +277,25 @@ int main(int argc, const char * argv[]) {
 
     cudaMemcpy(gpu_filter, filter, filterWidth*filterWidth * sizeof(float), cudaMemcpyHostToDevice);
 
+
+//while start
+
     cudaMemcpyAsync(input_r, ptr, w*h*sizeof(unsigned char), cudaMemcpyHostToDevice, stream[0]);
     cudaMemcpyAsync(input_g, ptr+w*h, w*h*sizeof(unsigned char), cudaMemcpyHostToDevice, stream[1]);
     cudaMemcpyAsync(input_b, ptr+2*w*h, w*h*sizeof(unsigned char), cudaMemcpyHostToDevice, stream[2]);
 
-    gaussianBlur<<<gridSize, blockSize, 0, stream[0]>>>(output_r, input_r, h, w, gpu_filter, filterWidth);   
-    gaussianBlur<<<gridSize, blockSize, 0, stream[1]>>>(output_g, input_g, h, w, gpu_filter, filterWidth);
-    gaussianBlur<<<gridSize, blockSize, 0, stream[2]>>>(output_b, input_b, h, w, gpu_filter, filterWidth);
+    gaussianBlur<<<gridSize, blockSize, newWidth*newWidth*sizeof(unsigned char), stream[0]>>>(output_r, input_r, h, w, gpu_filter, filterWidth);   
+    gaussianBlur<<<gridSize, blockSize, newWidth*newWidth*sizeof(unsigned char), stream[1]>>>(output_g, input_g, h, w, gpu_filter, filterWidth);
+    gaussianBlur<<<gridSize, blockSize, newWidth*newWidth*sizeof(unsigned char), stream[2]>>>(output_b, input_b, h, w, gpu_filter, filterWidth);
 
     cudaMemcpyAsync(ptr, output_r, w*h*sizeof(unsigned char), cudaMemcpyDeviceToHost, stream[0]);
     cudaMemcpyAsync(ptr+w*h, output_g, w*h*sizeof(unsigned char), cudaMemcpyDeviceToHost, stream[1]);
     cudaMemcpyAsync(ptr+2*w*h, output_b, w*h*sizeof(unsigned char), cudaMemcpyDeviceToHost, stream[2]);
 
+//while end
 
-//while loop end
 
     cudaDeviceSynchronize(); 
-
     cudaFree(input_r);
     cudaFree(input_g);
     cudaFree(input_b);
@@ -187,7 +303,6 @@ int main(int argc, const char * argv[]) {
     cudaFree(output_r);
     cudaFree(output_g);
     cudaFree(output_b);
-
 
     for (int i = 0; i < nStream; i++)
         cudaStreamDestroy(stream[i]);
