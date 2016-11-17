@@ -5,8 +5,9 @@
 \BOOKMARK [2][-]{subsection.3.2}{Sequential Implementation}{section.3}% 5
 \BOOKMARK [2][-]{subsection.3.3}{Parallel Implementation}{section.3}% 6
 \BOOKMARK [1][-]{section.4}{Optimization}{}% 7
-\BOOKMARK [2][-]{subsection.4.1}{Pageable vs. Pinned Memory}{section.4}% 8
-\BOOKMARK [2][-]{subsection.4.2}{Streams}{section.4}% 9
-\BOOKMARK [1][-]{section.5}{Results}{}% 10
-\BOOKMARK [1][-]{section.6}{Conclusion}{}% 11
-\BOOKMARK [1][-]{section*.6}{References}{}% 12
+\BOOKMARK [2][-]{subsection.4.1}{Shared memory v.s. Global Memory}{section.4}% 8
+\BOOKMARK [2][-]{subsection.4.2}{Pageable v.s. Pinned Memory}{section.4}% 9
+\BOOKMARK [2][-]{subsection.4.3}{Streams}{section.4}% 10
+\BOOKMARK [1][-]{section.5}{Results}{}% 11
+\BOOKMARK [1][-]{section.6}{Conclusion}{}% 12
+\BOOKMARK [1][-]{section*.6}{References}{}% 13
