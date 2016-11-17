@@ -66,8 +66,7 @@ Mathematically, the Gaussian blur is a type of image-blurring filter that uses a
 There are four steps of the sequential implementation. The first step is preprocess, which is responsible for reading image file and store it as Image class. The second step is to generate a gaussian filter, a matrix, based on parameters, like the standard deviation,  passed from users. The next step is to traverse each pixel in the image object and compute the values of a given pixel in the output image by multiplying each kernel value by the corresponding input image pixel values. The final step is to generate an image file from those new pixel values.
 
 \subsection{Parallel  Implementation}
-In this chapter, we implemented a normal parallel version gaussian blurring based on CUDA. In the following chapter, we optimized this implementation in several ways.  Firstly, we read the image file and generate filter matrix. Then we need to copy the image into device memory. Each pixel is combined with three channels, $r$, $g$ and $b$.  They should be separated and be gaussian blurred separately. So we use $cudaMemcpy2D$ to copy each channel of image file from host to device. Then we start the kernel three times and do gaussian blurring to each channel per time.  At last, we copy three blurred channels from device to host and save them into an image fileThis process is described in details with the Fig.1 and Fig.2.
-
+In this chapter, we implemented a normal parallel version gaussian blurring based on CUDA. In the following chapter, we optimized this implementation in several ways.  Firstly, we read the image file and generate filter matrix. Then we need to copy the image into device memory. Each pixel is combined with three channels, $r$, $g$ and $b$.  They should be separated and be gaussian blurred separately. So we use $cudaMemcpy2D$ to copy each channel of image file from host to device. Then we start the kernel three times and do gaussian blurring to each channel per time.  At last, we copy three blurred channels from device to host and save them into an image file.This process is described with the Fig.1.
 
 \begin{figure}[h]
 	\centering\includegraphics[width=85mm,height=92mm]{ImageProcessingCuda.png}
@@ -75,33 +74,20 @@ In this chapter, we implemented a normal parallel version gaussian blurring base
 	\label{parallel}
 \end{figure}
 
-\begin{figure}[htbp]
-\begin{center}
-\fbox {
-\begin{minipage}  {\textwidth}\sf
-\begin{tabbing}
-x\=xx\=xx\=xx\=xx\=xx\= \kill
-
-{\bf compute} $thread2DPos$ and $thread1DPos$\\
-\> $thread2DPos.x = blockIdx.x*blockDim.x  + threadIdx.x$\\
-\>$thread2DPos.y = blockIdx.y*blockDim.y+ threadIdx.y$ \\
-\>$thread1DPos = thread2DPos.y*numCols + threadIdx.x$
-\\
-\>{\bf set} $output$ $image$ $pixel$ to accumulator \\
-
-
-
-\end{tabbing}
-\end{minipage}
-}
-\end{center}
-  \caption{Pseudo-code for Gaussian Blur per Thread}
-\end{figure}
-
 
 \section{Optimization}
+\subsection{Shared memory v.s. Global Memory}
+In the previous version implementation of Gaussian blur, we store three channels in global memory, and access same global memory several times when we read neighbour channels. Since reading shared memory is much faster (shared memory ~$1.7TB/s$, while global memory ~ $150GB/s$), instead of pulling from global memory every time, we put channel values in the shared memory for other threads within the same block to see and reuse. 
 
-\subsection{Pageable vs. Pinned Memory}
+In order to compute blurred channel values at the boundary of one block, we need to load channel values from neighboring blocks, so shared memory size should be a little larger than a block size and threads at the boundary area are responsible for loading channel values from neighboring blocks. This is displayed at Fig.2. Threads in blue area of dotted square are responsible for loading channel values from corresponding white area.
+
+\begin{figure}[h]
+	\centering\includegraphics[width=120mm,height=85mm]{SharedMemory.png}
+	\caption{Loading neighbour channel values for shared variable}
+	\label{parallel}
+\end{figure}
+
+\subsection{Pageable v.s. Pinned Memory}
 Host data allocations are pageable by default, which means can be paged in/out between RAM and disk. However, GPU cannot access data directly from pageable memory, but from pinned memory, which means page-locked. Hence, whenever a data transfer is invoked on pageable memory, the CUDA driver has to allocate a temporary pinned memory array to copy host data and then transfer it to the device. \par
 \begin{figure}[h]
 	\centering\includegraphics[width=120mm]{pinned.jpg}
@@ -132,6 +118,17 @@ Both CPU and GPU implementations was running on the TACC Stampede Supercomputer.
 The command line tool, nvprof, and the Nvidia Visual Profiler are used to profile the performance of our implementation. And the results are shown in the table below.
 
 \section{Conclusion} 
+In our project, we implemented Gaussian Filter to two images, lena.ppm$(512*512)$ and bay.ppm$(1024*1024)$ in both CPU sequential logic and GPU parallel logic. After making it work correctly, we implemented three improvements:  \\
+1.      We changed allocation method from allocating pageable memory to pinned memory \\
+2.      We modified sequential kernel execution into pipelined execution \\
+3.      We replaced global kernel method with shared memory method \\
+
+According to the theory of Gaussian Filter, we started with implementing sequential algorithm in pure CPU environment. The original image and executed result image for lena.ppm(small-scale) are show in FIG.x, the execution time is XXX.
+//FIG.X
+Then, we changed the memory allocation method by using cudaMallocHost instead of malloc, after that, the modified execution time is XXX. As can see the performance is enhanced much compared to the pure sequential logic.
+Next, since we found that the kernel took much percentage of the whole execution time, we pipelined the kernel method execution to further improve the performance. [XXX]. After that, the modified execution time is XXX. From the View Profiler, we noticed that it did pipeline a little bit but not as expected as we wanted. After researching, the reason is that for K20[?] , there is a limitation number of blocks(180) run on the same and to execute the kernel method, we need 256 blocks which means we need to wait for an amount of blocks to finish their current task, only after that we can reuse the source and execute the next kernel method. The profiler results for non-pipeline verses pipeline is show in FIG.X
+//FIG.x
+Finally, we used shared memory to avoid wasting time to read from global memory each time, and thus further improved the performance. Our final execution time for lena.ppm is XXX, which speeded up XXX from the very beginning.
 
 \bibliographystyle{abbrv}
 \begin{thebibliography}{9}
