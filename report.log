@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  16 NOV 2016 21:29
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  16 NOV 2016 22:33
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -826,6 +826,16 @@ Missing character: There is no Â in font ptmr7t!
 Missing character: There is no ® in font ptmr7t!
 Missing character: There is no Â in font ptmr7t!
 Missing character: There is no ® in font ptmr7t!
+ <chart.PNG, id=90, 484.209pt x 205.36725pt>
+File: chart.PNG Graphic file (type png)
+
+<use chart.PNG>
+Package pdftex.def Info: chart.PNG used on input line 111.
+(pdftex.def)             Requested size: 341.43306pt x 144.81526pt.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
 Missing character: There is no ï in font ptmr7t!
 Missing character: There is no ¿ in font ptmr7t!
 Missing character: There is no ½ in font ptmr7t!
@@ -872,72 +882,84 @@ Missing character: There is no ï in font ptmr7t!
 Missing character: There is no ¿ in font ptmr7t!
 Missing character: There is no ½ in font ptmr7t!
 
-Underfull \hbox (badness 10000) in paragraph at lines 110--114
+Underfull \hbox (badness 10000) in paragraph at lines 117--121
 
  []
 
-[4 <./SharedMemory.png>] [5 <./pinned.jpg>]
-** WARNING: Ignoring useless \section in Appendix (line 124).
-<pinned_trade_off.png, id=101, 914.41624pt x 625.33624pt>
+[4 <./SharedMemory.png>] [5 <./pinned.jpg> <./chart.PNG>]
+<stage1.PNG, id=106, 916.02225pt x 99.37125pt>
+File: stage1.PNG Graphic file (type png)
+ <use stage1.PNG>
+Package pdftex.def Info: stage1.PNG used on input line 130.
+(pdftex.def)             Requested size: 455.2425pt x 113.8151pt.
+
+<stage3.PNG, id=107, 936.49875pt x 158.994pt>
+File: stage3.PNG Graphic file (type png)
+ <use stage3.PNG>
+Package pdftex.def Info: stage3.PNG used on input line 133.
+(pdftex.def)             Requested size: 455.2445pt x 170.72598pt.
+ [6 <./stage1.PNG> <./stage3.PNG>]
+** WARNING: Ignoring useless \section in Appendix (line 143).
+<pinned_trade_off.png, id=115, 914.41624pt x 625.33624pt>
 File: pinned_trade_off.png Graphic file (type png)
 
 <use pinned_trade_off.png>
-Package pdftex.def Info: pinned_trade_off.png used on input line 126.
+Package pdftex.def Info: pinned_trade_off.png used on input line 145.
 (pdftex.def)             Requested size: 341.43306pt x 233.48907pt.
- <concurrent.png, id=102, 489.83pt x 456.70625pt>
+ <concurrent.png, id=116, 489.83pt x 456.70625pt>
 File: concurrent.png Graphic file (type png)
 
 <use concurrent.png>
-Package pdftex.def Info: concurrent.png used on input line 131.
+Package pdftex.def Info: concurrent.png used on input line 150.
 (pdftex.def)             Requested size: 341.43306pt x 318.35419pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[6
+[7
 
- <./pinned_trade_off.png>] [7 <./concurrent.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 145--146
+ <./pinned_trade_off.png>] [8 <./concurrent.png>]
+Underfull \hbox (badness 10000) in paragraph at lines 164--165
 []\OT1/ptm/m/n/9 Harries, M. (2012, De-cem-ber). How to Op-ti-mize Data Trans-f
 ers in CUDA C/C++. Re-trieved from
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 148--149
+Underfull \hbox (badness 10000) in paragraph at lines 167--168
 []\OT1/ptm/m/n/9 Boyer, M. Choos-ing Be-tween Pinned and Non-Pinned Mem-ory. Re
 -trieved from
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 151--152
+Underfull \hbox (badness 10000) in paragraph at lines 170--171
 []\OT1/ptm/m/n/9 Harries, M. (2012, De-cem-ber). How to Over-lap Data Trans-fer
 s in CUDA C/C++. Re-trieved from
  []
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 156.
-[8
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 175.
+[9
 
 ]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 156.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 175.
  (./report.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 156.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 156.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 175.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 175.
 Package rerunfilecheck Info: File `report.out' has not changed.
-(rerunfilecheck)             Checksum: 0DC01BCFD655EA35D970274B1D2F8C15;795.
+(rerunfilecheck)             Checksum: 8AB3DFBC3A95E3AF217290A69AFA394C;795.
 
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 156.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 175.
  ) 
 Here is how much of TeX's memory you used:
- 16949 strings out of 493014
- 288222 string characters out of 6133351
- 344330 words of memory out of 5000000
- 20306 multiletter control sequences out of 15000+600000
+ 16970 strings out of 493014
+ 288488 string characters out of 6133351
+ 344499 words of memory out of 5000000
+ 20320 multiletter control sequences out of 15000+600000
  38416 words of font info for 84 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 36i,5n,40p,10391b,345s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 36i,9n,40p,10391b,345s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2016/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
 exlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/te
 xlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/local/texl
@@ -949,9 +971,9 @@ texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2016/te
 xmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2016/texmf-dist/f
 onts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2016/texmf-dist/fonts/type1
 /urw/times/utmri8a.pfb>
-Output written on report.pdf (8 pages, 367060 bytes).
+Output written on report.pdf (9 pages, 470599 bytes).
 PDF statistics:
- 165 PDF objects out of 1000 (max. 8388607)
- 33 named destinations out of 1000 (max. 500000)
- 138 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 179 PDF objects out of 1000 (max. 8388607)
+ 36 named destinations out of 1000 (max. 500000)
+ 153 words of extra memory for PDF output out of 10000 (max. 10000000)
 

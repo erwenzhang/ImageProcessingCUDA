@@ -104,7 +104,14 @@ Figure \ref{concurrent} illustrates the execution time line for three different 
 
 \section{Results}
 Both CPU and GPU implementations was running on the TACC Stampede Supercomputer. The CPU is Intel® Xeon® E5-2680 2.7GHz Processors. And the GPU is NVIDIA K20 with 5120 MB GDDR5 memory and 2 copy engines. \par
-The command line tool, nvprof, and the Nvidia Visual Profiler are used to profile the performance of our implementation. And the results are shown in the table below.
+The command line tool, nvprof, and the Nvidia Visual Profiler are used to profile the performance of our implementation. And the results are shown in Figure \ref{performances}.
+
+\begin{figure}[h]
+	\centering
+	\fbox{\includegraphics[width=120mm]{chart.PNG}}
+	\caption{Performance Improvement in GPU.}
+	\label{performances}
+\end{figure}
 
 \section{Conclusion} 
 In our project, we implemented Gaussian Filter to two images, lena.ppm$(512*512)$ and bay.ppm$(1024*1024)$ in both CPU sequential logic and GPU parallel logic. After making it work correctly, we implemented three improvements:  \\
@@ -112,12 +119,24 @@ In our project, we implemented Gaussian Filter to two images, lena.ppm$(512*512)
 2.����� We modified sequential kernel execution into pipelined execution \\
 3.����� We replaced global kernel method with shared memory method \\
 
-According to the theory of Gaussian Filter, we started with implementing sequential algorithm in pure CPU environment. The original image and executed result image for lena.ppm(small-scale) are show in FIG.x, the execution time is XXX.
-//FIG.X
-Then, we changed the memory allocation method by using cudaMallocHost instead of malloc, after that, the modified execution time is XXX. As can see the performance is enhanced much compared to the pure sequential logic.
-Next, since we found that the kernel took much percentage of the whole execution time, we pipelined the kernel method execution to further improve the performance. [XXX]. After that, the modified execution time is XXX. From the View Profiler, we noticed that it did pipeline a little bit but not as expected as we wanted. After researching, the reason is that for K20[?] , there is a limitation number of blocks(180) run on the same and to execute the kernel method, we need 256 blocks which means we need to wait for an amount of blocks to finish their current task, only after that we can reuse the source and execute the next kernel method. The profiler results for non-pipeline verses pipeline is show in FIG.X
-//FIG.x
-Finally, we used shared memory to avoid wasting time to read from global memory each time, and thus further improved the performance. Our final execution time for lena.ppm is XXX, which speeded up XXX from the very beginning.
+According to the theory of Gaussian Filter, we started with implementing sequential algorithm in pure CPU environment. The original image and executed result image for lena.ppm(small-scale) are show in appendix. We executed Gaussian blurring 30 times in order to better compute speed up later and the execution time is 16.6s.
+
+Then, we changed the memory allocation method by using cudaMallocHost instead of malloc, after that, the modified execution time is 167.0ms. As can see the performance is much enhanced compared to the pure sequential logic.
+Next, since we found that the kernel took much percentage of the whole execution time, we pipelined the kernel method execution to further improve the performance. After that, the modified execution time is 142.6. From the View Profiler, we noticed that it did pipeline a little bit but not as expected as we wanted. After researching, the reason is that for K20[?] , there is a limitation number of blocks(180) run on the same and to execute the kernel method, we need 256 blocks which means we need to wait for an amount of blocks to finish their current task, only after that can we reuse the source and execute the next kernel method. The profiler results for non-pipeline verses pipeline is show in Figure \ref{viewer}.
+
+\begin{figure}[!tbp]
+	\centering
+	\begin{minipage}[b]{1\textwidth}
+		\fbox{\includegraphics[width=160mm, height=40mm]{stage1.PNG}}
+	\end{minipage}
+	\begin{minipage}[b]{1\textwidth}
+		\boxed{\includegraphics[width=160mm, height=60mm]{stage3.PNG}}
+	\end{minipage}
+	
+	\caption{Time profiler viewer without using streams(top) verses using streams(bottom)}
+	\label{viewer}
+\end{figure}
+Finally, we used shared memory to avoid wasting time to read from global memory each time, and thus further improved the performance. Our final execution time for lena.ppm is 106.4ms, which speeded up 156x(16.6s/106.4ms) from the very beginning.
 
 \clearpage
 \appendix
